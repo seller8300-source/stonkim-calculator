@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STONE KIM | 스톤킴 인테리어·건설 자재 수량 계산기</title>
+<meta name="description" content="스톤킴 인테리어·건설 자재 수량 계산기. 시공 전 필요한 자재 수량과 금액을 미리 확인하세요.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:#eeeeee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;min-height:100vh;}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 60px;}
+
+/* 헤더 */
+.hrow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.logo{font-size:13px;font-weight:700;color:#e55a1c;letter-spacing:.08em;}
+.sep{font-size:13px;color:#ccc;}
+.ptitle{font-size:13px;font-weight:600;color:#555;}
+.psub{font-size:12px;color:#999;margin-bottom:16px;}
+
+/* 유튜브 */
+.yt{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;margin-bottom:14px;display:block;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.yt iframe{width:100%;height:100%;border:none;display:block;}
+.yt-thumb{position:relative;width:100%;height:100%;cursor:pointer;}
+.yt-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.yt-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.2);}
+.yt-btn{width:56px;height:56px;background:rgba(229,90,28,.92);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+.yt-btn:hover{transform:scale(1.08);}
+.yt-btn::after{content:'';border-left:22px solid #fff;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:5px;}
+.yt-tag{position:absolute;bottom:12px;left:14px;font-size:11px;color:#fff;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:20px;font-weight:500;}
+
+/* 배너 */
+.banner{background:linear-gradient(135deg,#e55a1c,#c44010);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;box-shadow:0 2px 12px rgba(229,90,28,.3);transition:opacity .15s;}
+.banner:hover{opacity:.93;}
+.bt{font-size:15px;font-weight:700;color:#fff;}
+.bs{font-size:11px;color:rgba(255,255,255,.8);margin-top:3px;}
+.bcta{padding:9px 18px;background:#fff;border:none;border-radius:8px;color:#e55a1c;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* 카드 */
+.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.07);}
+.card.locked{opacity:.38;pointer-events:none;background:#f8f8f8;}
+.ch{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.num{width:28px;height:28px;border-radius:50%;background:#e55a1c;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.num.done{background:#22c55e;}
+.num.locked{background:#ddd;color:#aaa;}
+.ctitle{font-size:16px;font-weight:700;}
+.csub{font-size:12px;color:#999;margin-top:2px;}
+
+/* 선택 버튼 */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.choice{padding:22px 10px;border:2px solid #eee;border-radius:14px;background:#fafafa;cursor:pointer;text-align:center;transition:all .15s;}
+.choice:hover,.choice.on{border-color:#e55a1c;background:#fff3ee;}
+.ci{font-size:30px;margin-bottom:8px;}
+.cn{font-size:16px;font-weight:700;color:#555;}
+.choice.on .cn{color:#e55a1c;}
+.yn-btn{padding:16px;border:2px solid #eee;border-radius:12px;background:#fafafa;cursor:pointer;text-align:center;transition:all .15s;}
+.yn-btn:hover{border-color:#e55a1c;}
+.yn-btn.yes-on{border-color:#22c55e;background:#f0fdf4;}
+.yn-btn.no-on{border-color:#6366f1;background:#f5f3ff;}
+.yn-n{font-size:16px;font-weight:700;}
+.yes .yn-n{color:#16a34a;}
+.no .yn-n{color:#6366f1;}
+.yn-d{font-size:11px;color:#aaa;margin-top:4px;line-height:1.4;}
+
+/* 입력 */
+.f{margin-bottom:14px;}
+.lb{font-size:12px;font-weight:600;color:#555;margin-bottom:6px;}
+input[type=number],input[type=text]{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:14px;outline:none;transition:border .15s,background .15s;}
+input[type=number]:focus,input[type=text]:focus{border-color:#e55a1c;background:#fff;}
+input::placeholder{color:#bbb;}
+select{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:13px;outline:none;cursor:pointer;transition:border .15s;}
+select:focus{border-color:#e55a1c;}
+.hint{font-size:11px;color:#e55a1c;font-weight:600;min-height:16px;margin-top:5px;}
+.iu{position:relative;}
+.iu input{padding-right:56px;}
+.ub{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#bbb;pointer-events:none;}
+.mt{display:flex;gap:6px;margin-bottom:12px;}
+.mt-t{flex:1;padding:9px;border:1.5px solid #e0e0e0;border-radius:9px;background:#f8f8f8;font-size:12px;font-weight:600;color:#888;cursor:pointer;text-align:center;transition:all .15s;}
+.mt-t.on{border-color:#e55a1c;background:#fff3ee;color:#e55a1c;}
+
+/* 단가표 입력 탭 */
+.input-tabs{display:flex;gap:0;margin-bottom:16px;border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden;}
+.itab{flex:1;padding:11px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;transition:all .15s;}
+.itab:not(:last-child){border-right:1.5px solid #e0e0e0;}
+.itab.on{background:#fff3ee;color:#e55a1c;}
+
+/* 파일 업로드 */
+.dzone{border:2px dashed #ddd;border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s;margin-bottom:10px;}
+.dzone:hover,.dzone.over{border-color:#e55a1c;background:#fff8f5;}
+.dz-ic{font-size:28px;margin-bottom:8px;}
+.dz-main{font-size:13px;color:#888;}
+.dz-main span{color:#e55a1c;font-weight:600;}
+.dz-sub{font-size:11px;color:#bbb;margin-top:4px;}
+.fmts{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+.fm{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+.fm.csv{background:#dcfce7;color:#16a34a;}
+.fm.xlsx{background:#dbeafe;color:#2563eb;}
+.fm.xls{background:#fef9c3;color:#ca8a04;}
+
+/* 붙여넣기 */
+.paste-guide{background:#fffbe6;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;color:#78350f;line-height:1.7;}
+.paste-guide b{color:#92400e;}
+textarea{width:100%;height:130px;padding:12px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;font-size:12px;color:#111;outline:none;resize:vertical;font-family:monospace;line-height:1.7;}
+textarea:focus{border-color:#e55a1c;background:#fff;}
+.perr{font-size:11px;color:#ef4444;margin-top:6px;display:none;}
+.perr.on{display:block;}
+
+/* 폼 입력 */
+.form-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.form-table th{font-size:11px;font-weight:700;color:#888;padding:6px 4px;text-align:left;border-bottom:1.5px solid #f0f0f0;}
+.form-table td{padding:4px 3px;}
+.form-table input{padding:9px 8px;font-size:13px;}
+.row-del{background:#fee2e2;border:none;color:#ef4444;cursor:pointer;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;}
+.add-row-btn{width:100%;padding:10px;border:1.5px dashed #e0e0e0;border-radius:10px;background:none;color:#aaa;font-size:12px;cursor:pointer;margin-bottom:14px;font-weight:600;}
+.add-row-btn:hover{border-color:#e55a1c;color:#e55a1c;}
+
+.apply-btn{width:100%;padding:13px;background:#111;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;transition:background .15s;}
+.apply-btn:hover{background:#333;}
+
+/* 저장됨 배지 */
+.saved{display:none;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;margin-bottom:14px;font-size:12px;color:#16a34a;font-weight:600;}
+.saved.on{display:flex;}
+.chg-link{margin-left:auto;font-size:11px;color:#16a34a;cursor:pointer;text-decoration:underline;}
+
+/* AI 박스 */
+.ai-box{background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:16px;margin-bottom:14px;}
+.ai-ttl{font-size:13px;font-weight:700;color:#2563eb;margin-bottom:10px;}
+.ai-ex{font-size:11px;color:#93c5fd;padding:2px 0;}
+.ai-exs{margin-bottom:12px;}
+.ai-row{display:flex;gap:8px;}
+.ai-in{flex:1;padding:12px 14px;background:#fff;border:1.5px solid #bfdbfe;border-radius:10px;color:#111;font-size:14px;outline:none;transition:border .15s;}
+.ai-in:focus{border-color:#3b82f6;}
+.ai-in::placeholder{color:#93c5fd;}
+.ai-go{padding:12px 18px;background:#3b82f6;border:none;border-radius:10px;color:#fff;font-size:13px;cursor:pointer;font-weight:700;transition:background .15s;}
+.ai-go:hover{background:#2563eb;}
+.ai-go:disabled{opacity:.4;cursor:not-allowed;}
+.typing{display:none;gap:5px;align-items:center;padding:10px 0;}
+.typing.on{display:flex;}
+.dot{width:6px;height:6px;background:#3b82f6;border-radius:50%;animation:bx .9s infinite;}
+.dot:nth-child(2){animation-delay:.15s;}
+.dot:nth-child(3){animation-delay:.3s;}
+@keyframes bx{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.ai-ans{margin-top:12px;font-size:13px;color:#1e3a5f;line-height:1.7;display:none;white-space:pre-wrap;background:#dbeafe;border-radius:10px;padding:12px;}
+.ai-ans.on{display:block;}
+
+.divider{height:1px;background:#f0f0f0;margin:16px 0;}
+.or{font-size:11px;color:#bbb;font-weight:600;margin-bottom:12px;}
+
+/* 벽면 */
+.wbox{background:#f8f8f8;border-radius:12px;padding:16px;margin-bottom:10px;position:relative;border:1.5px solid #ebebeb;}
+.wtag{font-size:11px;color:#e55a1c;font-weight:700;margin-bottom:12px;}
+.del-btn{position:absolute;top:12px;right:12px;background:#fee2e2;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:5px 9px;border-radius:7px;font-weight:600;}
+.add-w{width:100%;padding:11px;border:2px dashed #e0e0e0;border-radius:10px;background:none;color:#aaa;font-size:12px;cursor:pointer;margin-bottom:14px;font-weight:600;transition:all .15s;}
+.add-w:hover{border-color:#e55a1c;color:#e55a1c;}
+.go-btn{width:100%;padding:15px;background:#e55a1c;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:background .15s;box-shadow:0 2px 8px rgba(229,90,28,.3);}
+.go-btn:hover{background:#cc4f18;}
+.back-m{width:100%;padding:11px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;font-weight:600;display:none;}
+@media(max-width:600px){.back-m{display:block;}}
+
+/* 결과 */
+.result{background:#fff;border-radius:16px;padding:20px;margin-top:6px;display:none;box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.result.on{display:block;}
+.rhead{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.rbadge{width:28px;height:28px;border-radius:50%;background:#22c55e;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.rtitle{font-size:16px;font-weight:700;}
+.loss-box{background:#fff8f0;border:1.5px solid #fed7aa;border-radius:12px;padding:16px;margin-bottom:18px;}
+.loss-ttl{font-size:12px;font-weight:700;color:#c2410c;margin-bottom:12px;}
+.loss-row{display:flex;align-items:center;gap:12px;}
+input[type=range]{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:#fed7aa;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#e55a1c;cursor:pointer;box-shadow:0 1px 4px rgba(229,90,28,.4);}
+.loss-in{width:68px;padding:9px;background:#fff;border:1.5px solid #fed7aa;border-radius:9px;color:#c2410c;font-size:15px;font-weight:700;outline:none;text-align:center;}
+.loss-pct{font-size:14px;color:#c2410c;font-weight:700;}
+.loss-h{font-size:11px;color:#f97316;margin-top:10px;}
+.rsec{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #f5f5f5;}
+.rsec:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.rsec-t{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;}
+.rkey{font-size:13px;color:#888;}
+.rval{font-size:22px;font-weight:700;color:#111;}
+.rval.or{color:#e55a1c;}
+.rval.sm{font-size:15px;}
+.dbox{background:#f8f8f8;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #efefef;}
+.dtag{font-size:11px;color:#e55a1c;font-weight:700;margin-bottom:8px;}
+.dr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.dk{color:#aaa;} .dv{color:#666;} .dv.or{color:#e55a1c;font-weight:600;}
+.restart{width:100%;padding:12px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;margin-top:12px;font-weight:600;transition:all .15s;}
+.restart:hover{background:#eee;color:#555;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+  <div class="hrow">
+    <span class="logo">STONE KIM</span><span class="sep">|</span>
+    <span class="ptitle">스톤킴 인테리어·건설 자재 수량 계산기</span>
+  </div>
+  <div class="psub">시공 전 필요한 자재 수량과 금액을 미리 확인하세요</div>
+
+  <!-- 유튜브 -->
+  <div class="yt" id="yt-container">
+    <div class="yt-thumb" id="yt-thumb" onclick="playYT()">
+      <img src="https://img.youtube.com/vi/9B1MOtBjBuY/maxresdefault.jpg" alt="스톤킴 영상"
+        onerror="this.src='https://img.youtube.com/vi/9B1MOtBjBuY/hqdefault.jpg'">
+      <div class="yt-ov"><div class="yt-btn"></div></div>
+      <div class="yt-tag">▶ 클릭하여 영상 보기</div>
+    </div>
+    <iframe id="yt-iframe" src="" allowfullscreen allow="autoplay; encrypted-media" style="display:none;width:100%;height:100%;border:none;"></iframe>
+  </div>
+
+  <!-- 배너 -->
+  <a class="banner" href="tel:010-0000-0000">
+    <div><div class="bt">🪨 스톤킴 제품 무료 견적받기</div><div class="bs">소프트스톤 · 콕스톤 · 아트브릭 전 제품</div></div>
+    <div class="bcta">견적 문의 →</div>
+  </a>
+
+  <!-- 1단계 -->
+  <div class="card" id="s1">
+    <div class="ch"><div class="num" id="n1">1</div><div><div class="ctitle">시공할 공간은 어디이신가요?</div><div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div></div></div>
+    <div class="g2">
+      <div class="choice" id="cw" onclick="pickSpace('wall')"><div class="ci">🧱</div><div class="cn">벽</div></div>
+      <div class="choice" id="cf" onclick="pickSpace('floor')"><div class="ci">⬜</div><div class="cn">바닥</div></div>
+    </div>
+  </div>
+
+  <!-- 2단계 -->
+  <div class="card locked" id="s2">
+    <div class="ch"><div class="num locked" id="n2">2</div><div><div class="ctitle">단가표가 있으신가요?</div><div class="csub">한 번만 저장하면 이 기기에서 계속 사용 가능</div></div></div>
+    <div class="g2">
+      <div class="yn-btn yes" id="yy" onclick="pickList(true)"><div class="yn-n">예</div><div class="yn-d">단가표 업로드 후<br>모델명으로 계산</div></div>
+      <div class="yn-btn no" id="yn" onclick="pickList(false)"><div class="yn-n">아니오</div><div class="yn-d">사이즈·단가<br>직접 입력</div></div>
+    </div>
+    <button class="back-m" style="margin-top:14px;" onclick="goBack(1)">← 이전으로</button>
+  </div>
+
+  <!-- 3단계 A: 단가표 있음 -->
+  <div class="card locked" id="s3a">
+    <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 입력 & 수량 계산</div><div class="csub">파일 업로드 또는 구글 시트 복사 붙여넣기</div></div></div>
+
+    <div class="saved" id="sv">✅ <span id="sv-nm"></span><span class="chg-link" onclick="reupload()">변경하기</span></div>
+
+    <div id="up-area">
+      <div class="input-tabs">
+        <button class="itab on" id="tab1" onclick="switchTab(1)">📂 파일 업로드</button>
+        <button class="itab" id="tab2" onclick="switchTab(2)">📋 구글 시트 복사</button>
+        <button class="itab" id="tab3" onclick="switchTab(3)">✏️ 직접 입력</button>
+      </div>
+
+      <!-- 파일 업로드 -->
+      <div id="method1">
+        <div class="dzone" id="dz" onclick="document.getElementById('fi').click()"
+          ondragover="dov(event)" ondragleave="dol()" ondrop="ddr(event)">
+          <div class="dz-ic">📂</div>
+          <div class="dz-main"><span>파일 선택 또는 여기에 끌어다 놓기</span></div>
+          <div class="dz-sub">모델명 · 가로(mm) · 세로(mm) · 단가 순서</div>
+          <div class="fmts"><span class="fm csv">CSV</span><span class="fm xlsx">XLSX</span><span class="fm xls">XLS</span></div>
+        </div>
+        <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
+        <p style="font-size:11px;color:#bbb;text-align:center;margin-top:6px;">한 번 저장하면 다음 방문에도 자동으로 불러와요</p>
+      </div>
+
+      <!-- 구글 시트 붙여넣기 -->
+      <div id="method2" style="display:none;">
+        <div class="paste-guide">
+          <b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>
+          1. 시트에서 <b>모델명 · 가로 · 세로 · 단가</b> 4개 열 선택<br>
+          2. <b>Ctrl+C</b> (복사)<br>
+          3. 아래 칸 클릭 후 <b>Ctrl+V</b> (붙여넣기)<br>
+          → 탭, 쉼표 구분 모두 자동 인식
+        </div>
+        <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 여기에 붙여넣으세요&#10;&#10;예시:&#10;A001	600	1200	55000&#10;A013	600	1200	55000&#10;K035	600	1200	62000"></textarea>
+        <div class="perr" id="perr2"></div>
+        <button class="apply-btn" onclick="applyPaste()">✓ 단가표 적용하기</button>
+      </div>
+
+      <!-- 직접 입력 폼 -->
+      <div id="method3" style="display:none;">
+        <table class="form-table">
+          <thead><tr>
+            <th>모델명</th><th>가로(mm)</th><th>세로(mm)</th><th>단가(원)</th><th></th>
+          </tr></thead>
+          <tbody id="form-rows"></tbody>
+        </table>
+        <button class="add-row-btn" onclick="addFormRow()">+ 행 추가</button>
+        <div class="perr" id="perr3"></div>
+        <button class="apply-btn" onclick="applyForm()">✓ 단가표 적용하기</button>
+      </div>
+    </div>
+
+    <!-- 단가표 적용 후 -->
+    <div id="ca" style="display:none;">
+      <div class="ai-box">
+        <div class="ai-ttl">✦ AI에게 바로 물어보세요</div>
+        <div class="ai-exs">
+          <div class="ai-ex">예) "K035 600×1200 130헤베 몇 장이야?"</div>
+          <div class="ai-ex">예) "A013 45헤베 계산해줘"</div>
+          <div class="ai-ex">예) "A017 벽 3m×2.8m 몇 장?"</div>
+        </div>
+        <div class="ai-row">
+          <input class="ai-in" id="aiq" placeholder="모델명과 면적을 자유롭게..." onkeydown="if(event.key==='Enter')aiAsk()">
+          <button class="ai-go" id="aig" onclick="aiAsk()">계산</button>
+        </div>
+        <div class="typing" id="ait"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="ai-ans" id="aia"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="or">또는 직접 선택해서 계산</div>
+      <div class="f"><div class="lb">모델 선택</div><select id="ms" onchange="onMs()"><option value="">모델 선택...</option></select></div>
+      <div id="aw"></div>
+      <button class="add-w" onclick="addW('a')">+ 면적 추가</button>
+      <button class="go-btn" onclick="doCalc('a')">계산하기</button>
+    </div>
+    <button class="back-m" style="margin-top:10px;" onclick="goBack(2)">← 이전으로</button>
+  </div>
+
+  <!-- 3단계 B: 직접 입력 -->
+  <div class="card locked" id="s3b">
+    <div class="ch"><div class="num locked" id="n3b">3</div><div><div class="ctitle">자재 정보 입력 & 수량 계산</div><div class="csub">자재 사이즈와 단가를 직접 입력하세요</div></div></div>
+    <div class="f"><div class="lb">자재 가로 (mm)</div><div class="iu"><input type="number" id="bw" placeholder="600" oninput="bh2()"><span class="ub">mm</span></div></div>
+    <div class="f"><div class="lb">자재 세로 (mm)</div><div class="iu"><input type="number" id="bht" placeholder="1200" oninput="bh2()"><span class="ub">mm</span></div></div>
+    <div class="f"><div class="lb">단가 (원/장)</div><div class="iu"><input type="number" id="bp" placeholder="55000" oninput="bh2()"><span class="ub">원</span></div></div>
+    <div class="hint" id="bhn" style="margin-bottom:12px;"></div>
+    <div id="bwalls"></div>
+    <button class="add-w" onclick="addW('b')">+ 면적 추가</button>
+    <button class="go-btn" onclick="doCalc('b')">계산하기</button>
+    <button class="back-m" onclick="goBack(2)">← 이전으로</button>
+  </div>
+
+  <!-- 결과 -->
+  <div class="result" id="rc">
+    <div class="rhead"><div class="rbadge">✓</div><div class="rtitle">계산 결과</div></div>
+    <div class="loss-box">
+      <div class="loss-ttl">로스율 설정</div>
+      <div class="loss-row">
+        <input type="range" id="ls" min="0" max="30" value="10" oninput="syncL('s')">
+        <input type="number" class="loss-in" id="ln" value="10" min="0" max="100" oninput="syncL('n')">
+        <span class="loss-pct">%</span>
+      </div>
+      <div class="loss-h" id="lh">기본 10% · 조절하거나 직접 입력하세요</div>
+    </div>
+    <div id="ri"></div>
+    <button class="restart" onclick="doRestart()">↺ 처음부터 다시</button>
+  </div>
+</div>
+
+<script>
+var sp=null,prods=[],selProd=null,cache=null;
+var wc={a:0,b:0},wl={a:[],b:[]},wm={a:{},b:{}};
+var formRowCount=0;
+
+// 유튜브 재생
+function playYT(){
+  document.getElementById('yt-thumb').style.display='none';
+  var iframe=document.getElementById('yt-iframe');
+  iframe.src='https://www.youtube.com/embed/9B1MOtBjBuY?autoplay=1&rel=0';
+  iframe.style.display='block';
+}
+
+// 저장된 단가표 초기화
+(function(){
+  try{
+    var s=localStorage.getItem('sk_final3');
+    if(!s)return;
+    var d=JSON.parse(s);
+    if(!d||!d.prods||!d.prods.length)return;
+    prods=d.prods;
+    document.getElementById('sv').classList.add('on');
+    document.getElementById('sv-nm').textContent=d.name+' ('+prods.length+'개)';
+    document.getElementById('up-area').style.display='none';
+    buildSel();
+    document.getElementById('ca').style.display='block';
+  }catch(e){}
+  addFormRow();
+})();
+
+function save(n){try{localStorage.setItem('sk_final3',JSON.stringify({name:n,prods:prods}));}catch(e){}}
+
+function buildSel(){
+  var s=document.getElementById('ms');
+  s.innerHTML='<option value="">모델 선택...</option>'+prods.map(function(p){
+    return '<option value="'+p.model+'">'+p.model+' — '+p.w+'×'+p.h+'mm · '+Number(p.p).toLocaleString()+'원</option>';
+  }).join('');
+}
+
+function applyProds(name){
+  save(name);
+  document.getElementById('sv').classList.add('on');
+  document.getElementById('sv-nm').textContent=name+' ('+prods.length+'개)';
+  document.getElementById('up-area').style.display='none';
+  buildSel();
+  document.getElementById('ca').style.display='block';
+  setTimeout(function(){document.getElementById('ca').scrollIntoView({behavior:'smooth',block:'start'});},120);
+}
+
+function reupload(){
+  try{localStorage.removeItem('sk_final3');}catch(e){}
+  prods=[];selProd=null;
+  document.getElementById('sv').classList.remove('on');
+  document.getElementById('up-area').style.display='block';
+  document.getElementById('ca').style.display='none';
+  document.getElementById('fi').value='';
+}
+
+// 탭 전환
+function switchTab(t){
+  [1,2,3].forEach(function(i){
+    document.getElementById('tab'+i).classList.toggle('on',i===t);
+    document.getElementById('method'+i).style.display=i===t?'block':'none';
+  });
+}
+
+// 파일 업로드
+function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
+function dol(){document.getElementById('dz').classList.remove('over');}
+function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)procFile(f);}
+function hf(inp){var f=inp.files[0];if(f)procFile(f);}
+function procFile(f){
+  var n=f.name.toLowerCase();
+  if(n.endsWith('.csv')){
+    var r=new FileReader();r.onload=function(e){parseCSV(e.target.result,f.name);};r.readAsText(f,'UTF-8');
+  }else if(n.endsWith('.xlsx')||n.endsWith('.xls')){
+    var r=new FileReader();
+    r.onload=function(e){
+      try{
+        var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+        var ws=wb.Sheets[wb.SheetNames[0]];
+        var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        var st=rows.length>0&&isNaN(parseFloat(String(rows[0][1])))?1:0;
+        var p2=rows.slice(st).map(function(r){
+          return{model:String(r[0]||'').trim(),w:parseFloat(r[1]),h:parseFloat(r[2]),p:parseFloat(r[3])};
+        }).filter(function(p){return p.model&&!isNaN(p.w)&&!isNaN(p.h)&&!isNaN(p.p);});
+        if(!p2.length){alert('엑셀 형식 오류: 모델명 | 가로(mm) | 세로(mm) | 단가 순서');return;}
+        prods=p2;applyProds(f.name);
+      }catch(err){alert('엑셀 읽기 실패: '+err.message);}
+    };
+    r.readAsArrayBuffer(f);
+  }else{alert('CSV, XLSX, XLS 파일만 지원합니다');}
+}
+function parseCSV(txt,fname){
+  var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
+  var st=lines.length>0&&isNaN(parseFloat((lines[0]||'').split(',')[1]))?1:0;
+  var p2=lines.slice(st).map(function(l){
+    var c=l.split(',');
+    return{model:(c[0]||'').trim(),w:parseFloat(c[1]),h:parseFloat(c[2]),p:parseFloat(c[3])};
+  }).filter(function(p){return p.model&&!isNaN(p.w)&&!isNaN(p.h)&&!isNaN(p.p);});
+  if(!p2.length){alert('CSV 형식 오류: 모델명,가로,세로,단가 순서로 입력해주세요');return;}
+  prods=p2;applyProds(fname);
+}
+
+// 구글 시트 붙여넣기
+function parseLine(line){
+  line=line.trim();if(!line)return null;
+  var parts;
+  if(line.indexOf('\t')>=0)parts=line.split('\t');
+  else if(line.indexOf(',')>=0)parts=line.split(',');
+  else parts=line.split(/\s+/);
+  parts=parts.map(function(p){return p.trim().replace(/[₩,원\s]/g,'');});
+  if(parts.length<4)return null;
+  var model=parts[0],w=parseFloat(parts[1]),h=parseFloat(parts[2]),p=parseFloat(parts[3]);
+  if(!model||isNaN(w)||isNaN(h)||isNaN(p))return null;
+  return{model:model,w:w,h:h,p:p};
+}
+function applyPaste(){
+  var txt=(document.getElementById('pt').value||'').trim();
+  var err=document.getElementById('perr2');err.classList.remove('on');
+  if(!txt){err.textContent='내용을 붙여넣어 주세요.';err.classList.add('on');return;}
+  var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
+  var p2=[];
+  for(var i=0;i<lines.length;i++){var r=parseLine(lines[i]);if(r)p2.push(r);}
+  if(!p2.length){err.textContent='인식된 행이 없습니다. 모델명·가로·세로·단가 4개 열이 있는지 확인해주세요.';err.classList.add('on');return;}
+  prods=p2;applyProds('시트 붙여넣기 ('+p2.length+'개)');
+}
+
+// 직접 입력 폼
+function addFormRow(){
+  formRowCount++;var id=formRowCount;
+  var tbody=document.getElementById('form-rows');
+  var tr=document.createElement('tr');tr.id='fr_'+id;
+  tr.innerHTML='<td><input type="text" id="fm_'+id+'" placeholder="A001"></td>'
+    +'<td><input type="number" id="fw_'+id+'" placeholder="600"></td>'
+    +'<td><input type="number" id="fh_'+id+'" placeholder="1200"></td>'
+    +'<td><input type="number" id="fp_'+id+'" placeholder="55000"></td>'
+    +'<td>'+(formRowCount>1?'<button class="row-del" onclick="delFormRow('+id+')">✕</button>':'')+'</td>';
+  tbody.appendChild(tr);
+}
+function delFormRow(id){var el=document.getElementById('fr_'+id);if(el)el.remove();}
+function applyForm(){
+  var err=document.getElementById('perr3');err.classList.remove('on');
+  var rows=document.getElementById('form-rows').querySelectorAll('tr');
+  var p2=[];
+  rows.forEach(function(tr){
+    var id=tr.id.replace('fr_','');
+    var m=(document.getElementById('fm_'+id).value||'').trim();
+    var w=parseFloat(document.getElementById('fw_'+id).value)||0;
+    var h=parseFloat(document.getElementById('fh_'+id).value)||0;
+    var p=parseFloat(document.getElementById('fp_'+id).value)||0;
+    if(m&&w>0&&h>0&&p>0)p2.push({model:m,w:w,h:h,p:p});
+  });
+  if(!p2.length){err.textContent='입력된 행이 없습니다. 모든 항목을 입력해주세요.';err.classList.add('on');return;}
+  prods=p2;applyProds('직접입력 ('+p2.length+'개)');
+}
+
+function onMs(){var v=document.getElementById('ms').value;selProd=prods.find(function(p){return p.model===v;})||null;}
+
+// 스텝 제어
+function unlock(id,nid){
+  document.getElementById(id).classList.remove('locked');
+  var n=document.getElementById(nid);n.classList.remove('locked');
+  n.style.background='#e55a1c';n.style.color='#fff';
+}
+function markDone(nid){var n=document.getElementById(nid);n.className='num done';n.textContent='✓';}
+function scrollTo(id){setTimeout(function(){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});},80);}
+
+function pickSpace(s){
+  sp=s;
+  document.getElementById('cw').classList.toggle('on',s==='wall');
+  document.getElementById('cf').classList.toggle('on',s==='floor');
+  markDone('n1');unlock('s2','n2');scrollTo('s2');
+}
+function pickList(v){
+  document.getElementById('yy').classList.toggle('yes-on',v===true);
+  document.getElementById('yn').classList.toggle('no-on',v===false);
+  markDone('n2');
+  document.getElementById('s3a').classList.add('locked');
+  document.getElementById('s3b').classList.add('locked');
+  document.getElementById('rc').classList.remove('on');
+  if(v){unlock('s3a','n3a');scrollTo('s3a');if(!wl.a.length)addW('a');}
+  else{unlock('s3b','n3b');scrollTo('s3b');if(!wl.b.length)addW('b');}
+}
+function goBack(step){
+  if(step===1){
+    ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
+    document.getElementById('rc').classList.remove('on');
+    document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');
+    var n=document.getElementById('n1');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='1';
+    scrollTo('s1');
+  }else{
+    ['s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
+    document.getElementById('rc').classList.remove('on');
+    document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');
+    var n=document.getElementById('n2');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='2';
+    scrollTo('s2');
+  }
+}
+
+// AI
+async function aiAsk(){
+  var q=(document.getElementById('aiq').value||'').trim();if(!q)return;
+  var btn=document.getElementById('aig');btn.disabled=true;
+  document.getElementById('ait').classList.add('on');
+  document.getElementById('aia').classList.remove('on');
+  var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:'인테리어 자재 수량 계산 전문가.\n단가표:\n'+db+'\n\n규칙: 헤베=m², 평=3.3058m², 수량=올림(면적÷1장면적), 로스=올림(수량×1.1)\n결과: 수량·로스포함수량·금액만 간결하게. 한국어.',
+        messages:[{role:'user',content:q}]})
+    });
+    var d=await res.json();
+    document.getElementById('ait').classList.remove('on');
+    var a=document.getElementById('aia');
+    a.textContent=(d.content&&d.content[0]&&d.content[0].text)||'다시 시도해주세요.';a.classList.add('on');
+  }catch(e){
+    document.getElementById('ait').classList.remove('on');
+    document.getElementById('aia').textContent='잠시 후 다시 시도해주세요.';document.getElementById('aia').classList.add('on');
+  }
+  btn.disabled=false;
+}
+
+// 벽면
+function addW(m){
+  wc[m]++;var id=wc[m];wl[m].push(id);wm[m][id]='hebe';
+  var lbl=sp==='floor'?'바닥':'벽면';
+  var wrap=document.getElementById(m==='a'?'aw':'bwalls');
+  var div=document.createElement('div');div.className='wbox';div.id='wb_'+m+'_'+id;
+  div.innerHTML='<div class="wtag">'+lbl+'-'+id+'</div>'
+    +(wl[m].length>1?'<button class="del-btn" onclick="rmW(\''+m+'\','+id+')">✕ 삭제</button>':'')
+    +'<div class="mt"><div class="mt-t on" id="mth_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'hebe\')">헤베로 입력</div>'
+    +'<div class="mt-t" id="mts_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'size\')">가로×세로로 입력</div></div>'
+    +'<div id="ih_'+m+'_'+id+'"><div class="lb">면적 (헤베)</div>'
+    +'<div class="iu"><input type="number" id="wa_'+m+'_'+id+'" placeholder="예: 13.5" step="0.01"><span class="ub">헤베</span></div></div>'
+    +'<div id="is_'+m+'_'+id+'" style="display:none"><div class="r2">'
+    +'<div><div class="lb">가로 (mm)</div><input type="number" id="ww_'+m+'_'+id+'" placeholder="3000"></div>'
+    +'<div><div class="lb">세로 (mm)</div><input type="number" id="wh_'+m+'_'+id+'" placeholder="2800"></div>'
+    +'</div></div>';
+  wrap.appendChild(div);
+}
+function swM(m,id,mode){
+  wm[m][id]=mode;
+  document.getElementById('mth_'+m+'_'+id).classList.toggle('on',mode==='hebe');
+  document.getElementById('mts_'+m+'_'+id).classList.toggle('on',mode==='size');
+  document.getElementById('ih_'+m+'_'+id).style.display=mode==='hebe'?'block':'none';
+  document.getElementById('is_'+m+'_'+id).style.display=mode==='size'?'block':'none';
+}
+function rmW(m,id){wl[m]=wl[m].filter(function(w){return w!==id;});var el=document.getElementById('wb_'+m+'_'+id);if(el)el.remove();}
+function getArea(m,id){
+  if(wm[m][id]==='hebe')return parseFloat(document.getElementById('wa_'+m+'_'+id).value)||0;
+  var ww=parseFloat(document.getElementById('ww_'+m+'_'+id).value)||0,wh=parseFloat(document.getElementById('wh_'+m+'_'+id).value)||0;
+  return(ww>0&&wh>0)?(ww/1000)*(wh/1000):0;
+}
+function bh2(){
+  var w=parseFloat(document.getElementById('bw').value)||0,h=parseFloat(document.getElementById('bht').value)||0,p=parseFloat(document.getElementById('bp').value)||0;
+  if(w>0&&h>0){var a=(w/1000)*(h/1000);document.getElementById('bhn').textContent='1헤베 = '+(1/a).toFixed(1)+'장'+(p>0?' · 헤베당 '+Math.round(p/a).toLocaleString()+'원':'');}
+}
+function syncL(from){
+  var v;
+  if(from==='s'){v=parseFloat(document.getElementById('ls').value)||0;document.getElementById('ln').value=v;}
+  else{v=parseFloat(document.getElementById('ln').value)||0;if(v>100)v=100;document.getElementById('ls').value=Math.min(v,30);document.getElementById('ln').value=v;}
+  document.getElementById('lh').textContent='로스율 '+v+'% 적용 중';
+  if(cache)renderResult(cache,v);
+}
+function getLoss(){return parseFloat(document.getElementById('ln').value)||0;}
+function doCalc(m){
+  var tw,th,tp;
+  if(m==='a'){if(!selProd){alert('모델을 선택해주세요.');return;}tw=+selProd.w;th=+selProd.h;tp=+selProd.p;}
+  else{tw=parseFloat(document.getElementById('bw').value)||0;th=parseFloat(document.getElementById('bht').value)||0;tp=parseFloat(document.getElementById('bp').value)||0;
+    if(!tw||!th||!tp){alert('자재 가로, 세로, 단가를 모두 입력해주세요.');return;}}
+  var ta=(tw/1000)*(th/1000);
+  if(!wl[m]||!wl[m].length){alert('면적을 입력해주세요.');return;}
+  var details=[];
+  for(var i=0;i<wl[m].length;i++){
+    var id=wl[m][i];var aM=getArea(m,id);
+    if(!aM){alert('모든 면적을 입력해주세요.');return;}
+    details.push({id:id,aM:aM,qty:Math.ceil(aM/ta),tp:tp});
+  }
+  cache={details:details};
+  markDone(m==='a'?'n3a':'n3b');
+  var rc=document.getElementById('rc');rc.classList.add('on');
+  renderResult(cache,getLoss());
+  setTimeout(function(){rc.scrollIntoView({behavior:'smooth',block:'start'});},150);
+}
+function renderResult(c,lr){
+  var mult=1+lr/100,tp=c.details[0].tp,rows='',tQ=0,tQL=0,tP=0,tPL=0;
+  for(var i=0;i<c.details.length;i++){
+    var d=c.details[i];var qL=Math.ceil(d.qty*mult),price=d.qty*tp,priceL=Math.ceil(d.qty*mult)*tp;
+    tQ+=d.qty;tQL+=qL;tP+=price;tPL+=priceL;
+    rows+='<div class="dbox"><div class="dtag">면적-'+d.id+' · '+d.aM+'헤베 ('+(d.aM/3.3058).toFixed(1)+'평)</div>'
+      +'<div class="dr"><span class="dk">수량</span><span class="dv">'+d.qty+'장</span></div>'
+      +'<div class="dr"><span class="dk">+로스('+lr+'%)</span><span class="dv or">'+qL+'장</span></div>'
+      +'<div class="dr"><span class="dk">금액</span><span class="dv">'+price.toLocaleString()+'원</span></div>'
+      +'<div class="dr"><span class="dk">+로스 포함</span><span class="dv or">'+priceL.toLocaleString()+'원</span></div></div>';
+  }
+  document.getElementById('ri').innerHTML=
+    '<div class="rsec"><div class="rsec-t">총 금액</div>'
+    +'<div class="rrow"><span class="rkey">기본 금액</span><span class="rval sm">'+tP.toLocaleString()+'원</span></div>'
+    +'<div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tPL.toLocaleString()+'원</span></div></div>'
+    +'<div class="rsec"><div class="rsec-t">총 수량</div>'
+    +'<div class="rrow"><span class="rkey">기본 수량</span><span class="rval sm">'+tQ+'장</span></div>'
+    +'<div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tQL+'장</span></div></div>'
+    +'<div class="rsec">'+rows+'</div>';
+}
+function doRestart(){
+  sp=null;selProd=null;cache=null;wc={a:0,b:0};wl={a:[],b:[]};wm={a:{},b:{}};
+  document.getElementById('aw').innerHTML='';document.getElementById('bwalls').innerHTML='';
+  ['bw','bht','bp'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('bhn').textContent='';
+  document.getElementById('aiq').value='';document.getElementById('aia').classList.remove('on');
+  document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');
+  document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');
+  ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
+  document.getElementById('rc').classList.remove('on');
+  document.getElementById('ls').value=10;document.getElementById('ln').value=10;
+  document.getElementById('lh').textContent='기본 10% · 조절하거나 직접 입력하세요';
+  // 유튜브 초기화
+  document.getElementById('yt-thumb').style.display='block';
+  var iframe=document.getElementById('yt-iframe');iframe.src='';iframe.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
