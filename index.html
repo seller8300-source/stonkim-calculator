@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STONE KIM | 스톤킴 인테리어 건축자재 수량 계산기</title>
-<meta name="description" content="스톤킴 인테리어 건축자재 수량 계산기. 시공 전 필요한 자재 수량과 금액을 미리 확인하세요.">
+<meta name="description" content="스톤킴 인테리어 건축자재 수량 계산기">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -16,7 +16,7 @@ body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Goth
 .header-left{display:flex;flex-direction:column;gap:2px;}
 .logo-main{font-size:15px;font-weight:800;color:#111;letter-spacing:-.02em;text-decoration:none;}
 .logo-main span{color:#e55a1c;}
-.logo-sub{font-size:10px;color:#999;font-weight:500;letter-spacing:-.01em;}
+.logo-sub{font-size:10px;color:#999;font-weight:500;}
 .header-nav a{font-size:12px;font-weight:600;color:#888;text-decoration:none;padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;}
 .header-nav a:hover{color:#e55a1c;border-color:#e55a1c;}
 .yt-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;}
@@ -63,7 +63,7 @@ select:focus{border-color:#e55a1c;}
 .itab{flex:1;padding:11px 6px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;}
 .itab:not(:last-child){border-right:1.5px solid #e0e0e0;}
 .itab.on{background:#fff3ee;color:#e55a1c;}
-.dzone{border:2px dashed #ddd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;background:#fafafa;}
+.dzone{border:2px dashed #ddd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s;}
 .dzone:hover,.dzone.over{border-color:#e55a1c;background:#fff8f5;}
 .dz-ic{font-size:32px;margin-bottom:10px;}
 .dz-main{font-size:14px;color:#888;font-weight:500;} .dz-main span{color:#e55a1c;font-weight:700;}
@@ -71,18 +71,27 @@ select:focus{border-color:#e55a1c;}
 .fmts{display:flex;gap:6px;justify-content:center;margin-top:12px;}
 .fm{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
 .fm.csv{background:#dcfce7;color:#16a34a;} .fm.xlsx{background:#dbeafe;color:#2563eb;} .fm.xls{background:#fef9c3;color:#ca8a04;}
-.map-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px;margin-top:12px;display:none;}
-.map-box.show{display:block;}
-.map-title{font-size:13px;font-weight:700;color:#16a34a;margin-bottom:4px;}
-.map-sub{font-size:11px;color:#22c55e;margin-bottom:12px;line-height:1.5;}
-.map-preview{background:#fff;border-radius:8px;padding:10px;margin-bottom:14px;overflow-x:auto;max-height:140px;overflow-y:auto;}
-.map-preview table{width:100%;border-collapse:collapse;font-size:11px;}
-.map-preview th{background:#f0fdf4;color:#16a34a;font-weight:700;padding:5px 8px;text-align:left;border-bottom:1px solid #bbf7d0;white-space:nowrap;}
-.map-preview td{padding:4px 8px;color:#555;border-bottom:1px solid #f0f0f0;white-space:nowrap;}
-.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.map-lbl{font-size:11px;font-weight:600;color:#555;margin-bottom:4px;}
-.map-confirm{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
-.map-confirm:hover{background:#16a34a;}
+/* AI 분석 로딩 */
+.ai-parsing{display:none;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:20px;margin-top:12px;text-align:center;}
+.ai-parsing.show{display:block;}
+.ai-parsing-icon{font-size:28px;margin-bottom:10px;animation:spin 2s linear infinite;display:inline-block;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ai-parsing-text{font-size:14px;font-weight:600;color:#2563eb;margin-bottom:4px;}
+.ai-parsing-sub{font-size:12px;color:#93c5fd;}
+/* 분석 완료 */
+.parse-result{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
+.parse-result.show{display:block;}
+.parse-result-title{font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;}
+.parse-items{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.parse-item{font-size:11px;padding:4px 10px;background:#fff;border:1px solid #86efac;border-radius:20px;color:#16a34a;}
+.parse-apply-btn{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.parse-apply-btn:hover{background:#16a34a;}
+.parse-err{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:14px;margin-top:12px;display:none;}
+.parse-err.show{display:block;}
+.parse-err-title{font-size:13px;font-weight:700;color:#dc2626;margin-bottom:6px;}
+.parse-err-msg{font-size:12px;color:#ef4444;margin-bottom:10px;line-height:1.5;}
+.parse-retry{font-size:12px;color:#dc2626;cursor:pointer;text-decoration:underline;}
+
 .paste-guide{background:#fffbe6;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;color:#78350f;line-height:1.7;}
 .paste-guide b{color:#92400e;}
 textarea{width:100%;height:130px;padding:12px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;font-size:12px;color:#111;outline:none;resize:vertical;font-family:monospace;line-height:1.7;}
@@ -150,28 +159,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .dk{color:#aaa;} .dv{color:#666;} .dv.or{color:#e55a1c;font-weight:600;}
 .restart{width:100%;padding:12px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;margin-top:12px;font-weight:600;}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-/* 푸터 */
 .footer{background:#111;color:#fff;padding:32px 20px 40px;}
 .footer-logo-wrap{margin-bottom:6px;}
 .footer-logo-img{height:38px;object-fit:contain;filter:brightness(0) invert(1);}
-.footer-logo-fallback{font-family:'Dancing Script',cursive;font-size:32px;font-weight:700;color:#fff;letter-spacing:.02em;}
+.footer-logo-fallback{font-family:'Dancing Script',cursive;font-size:32px;font-weight:700;color:#fff;}
 .footer-logo-fallback span{color:#e55a1c;}
 .footer-tagline{font-size:12px;color:#888;margin-bottom:4px;}
 .footer-tagline2{font-size:12px;color:#666;margin-bottom:20px;font-style:italic;}
 .footer-products-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
 .product-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
-.product-tag{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;cursor:pointer;text-decoration:none;}
+.product-tag{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;text-decoration:none;}
 .product-tag:hover{border-color:#e55a1c;color:#e55a1c;}
-.footer-info{border-top:1px solid #222;padding-top:18px;margin-top:4px;}
-.fi-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
+.footer-info{border-top:1px solid #222;padding-top:18px;}
+.fi-row{display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
 .footer-cta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px;}
 .fcta{padding:12px 8px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;}
 .fcta.kakao{background:#FEE500;color:#111;}
-.fcta.kakao:hover{background:#fdd800;}
 .fcta.sample{background:#222;color:#aaa;border:1px solid #333;}
 .fcta.sample:hover{background:#2a2a2a;color:#fff;}
 .fcta.insta{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
-.fcta.insta:hover{opacity:.9;}
 .footer-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
 </style>
 </head>
@@ -220,7 +226,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div class="card locked" id="s3a">
-      <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 입력 & 수량 계산</div><div class="csub">어떤 형식이든 자동으로 인식합니다</div></div></div>
+      <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 업로드 & 수량 계산</div><div class="csub">AI가 파일을 읽고 자동으로 인식합니다</div></div></div>
       <div class="saved" id="sv">✅ <span id="sv-nm"></span><span class="chg-link" onclick="reupload()">변경하기</span></div>
       <div id="up-area">
         <div class="input-tabs">
@@ -228,36 +234,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <button class="itab" id="tab2" onclick="switchTab(2)">📋 구글시트 복사</button>
           <button class="itab" id="tab3" onclick="switchTab(3)">✏️ 직접 입력</button>
         </div>
+
+        <!-- 파일 업로드 -->
         <div id="method1">
           <div class="dzone" id="dz" onclick="document.getElementById('fi').click()"
             ondragover="dov(event)" ondragleave="dol()" ondrop="ddr(event)">
             <div class="dz-ic">📂</div>
             <div class="dz-main"><span>파일 선택 또는 여기에 끌어다 놓기</span></div>
-            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>모델명·사이즈·단가 열을 AI가 자동 인식</div>
+            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>AI가 모델명·사이즈·단가를 자동으로 찾아냅니다</div>
             <div class="fmts"><span class="fm csv">CSV</span><span class="fm xlsx">XLSX</span><span class="fm xls">XLS</span></div>
           </div>
           <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
-          <div class="map-box" id="map-box">
-            <div class="map-title">✨ 파일 읽기 완료! 열을 확인해주세요</div>
-            <div class="map-sub" id="map-sub-txt">자동으로 감지했어요. 틀린 게 있으면 드롭다운에서 수정하세요.</div>
-            <div class="map-preview" id="map-preview"></div>
-            <div class="map-grid">
-              <div><div class="map-lbl">모델명 열</div><select id="col-model"></select></div>
-              <div><div class="map-lbl">가로(mm) 열</div><select id="col-w"></select></div>
-            </div>
-            <div class="map-grid">
-              <div><div class="map-lbl">세로(mm) 열</div><select id="col-h"></select></div>
-              <div><div class="map-lbl">단가(원) 열</div><select id="col-p"></select></div>
-            </div>
-            <button class="map-confirm" onclick="confirmMapping()">✓ 이대로 적용하기</button>
+
+          <!-- AI 분석 중 -->
+          <div class="ai-parsing" id="ai-parsing">
+            <div class="ai-parsing-icon">🤖</div>
+            <div class="ai-parsing-text">AI가 파일을 분석하고 있어요...</div>
+            <div class="ai-parsing-sub">모델명·사이즈·단가 열을 자동으로 찾는 중</div>
+          </div>
+
+          <!-- 분석 완료 -->
+          <div class="parse-result" id="parse-result">
+            <div class="parse-result-title">✅ <span id="parse-count"></span>개 제품을 인식했습니다</div>
+            <div class="parse-items" id="parse-items"></div>
+            <button class="parse-apply-btn" onclick="applyParsed()">✓ 이 단가표로 계산하기</button>
+          </div>
+
+          <!-- 오류 -->
+          <div class="parse-err" id="parse-err">
+            <div class="parse-err-title">⚠️ 인식에 실패했습니다</div>
+            <div class="parse-err-msg" id="parse-err-msg"></div>
+            <span class="parse-retry" onclick="document.getElementById('fi').click()">다른 파일 선택하기</span>
           </div>
         </div>
+
+        <!-- 구글시트 붙여넣기 -->
         <div id="method2" style="display:none;">
-          <div class="paste-guide"><b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>1. 모델명·가로·세로·단가 열 선택<br>2. <b>Ctrl+C</b> 복사 → 아래 칸에 <b>Ctrl+V</b> 붙여넣기<br>→ 사이즈가 한 칸(600*1200)이어도 자동 인식됩니다</div>
-          <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 붙여넣으세요&#10;&#10;예시:&#10;모던그레이01	600 * 1200	50000&#10;테라조화이트02	600 * 2400	160000"></textarea>
+          <div class="paste-guide"><b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>1. 모델명·사이즈·단가 포함된 열들 선택<br>2. <b>Ctrl+C</b> → 아래 칸에 <b>Ctrl+V</b><br>→ 사이즈가 "600*1200" 한 칸이어도 OK, 헤더 있어도 OK</div>
+          <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 붙여넣으세요"></textarea>
           <div class="perr" id="perr2"></div>
           <button class="apply-btn" onclick="applyPaste()">✓ 단가표 적용하기</button>
         </div>
+
+        <!-- 직접 입력 -->
         <div id="method3" style="display:none;">
           <table class="form-table">
             <thead><tr><th>모델명</th><th>가로(mm)</th><th>세로(mm)</th><th>단가(원)</th><th></th></tr></thead>
@@ -268,6 +287,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <button class="apply-btn" onclick="applyForm()">✓ 단가표 적용하기</button>
         </div>
       </div>
+
+      <!-- 단가표 적용 후 -->
       <div id="ca" style="display:none;">
         <div class="ai-box">
           <div class="ai-ttl">✦ AI에게 바로 물어보세요</div>
@@ -322,13 +343,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
 
   <footer class="footer">
-    <!-- 로고: 실제 이미지 시도 후 필기체 폴백 -->
     <div class="footer-logo-wrap">
-      <img class="footer-logo-img" id="footer-logo-img"
-        src="https://ecimg.cafe24img.com/pg1984b31415074059/stonekim/web/img/logo.svg"
-        alt="스톤킴 로고"
-        onerror="this.style.display='none';document.getElementById('footer-logo-text').style.display='block'">
-      <div class="footer-logo-fallback" id="footer-logo-text" style="display:none;">Stone<span>Kim</span></div>
+      <img class="footer-logo-img" src="https://ecimg.cafe24img.com/pg1984b31415074059/stonekim/web/img/logo.svg" alt="스톤킴"
+        onerror="this.style.display='none';document.getElementById('flt').style.display='block'">
+      <div class="footer-logo-fallback" id="flt" style="display:none;">Stone<span>Kim</span></div>
     </div>
     <div class="footer-tagline">트렌디한 인테리어 자재는 스톤킴</div>
     <div class="footer-tagline2">우리는 초효율 시공을 만듭니다</div>
@@ -340,7 +358,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">WPC 패널</a>
       <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">메탈 패널</a>
       <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">유리블럭</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">스텐 패널</a>
       <a class="product-tag" href="https://stonekim.kr/shopinfo/catalog.html" target="_blank">전체 카탈로그 →</a>
     </div>
     <div class="footer-info">
@@ -357,13 +374,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <script>
-var sp=null,prods=[],selProd=null,cache=null;
+var sp=null,prods=[],selProd=null,cache=null,parsedProds=null;
 var wc={a:0,b:0},wl={a:[],b:[]},wm={a:{},b:{}};
-var formRowCount=0,rawRows=[],rawHeaders=[],rawDataStart=1;
+var formRowCount=0;
 
 (function(){
   try{
-    var s=localStorage.getItem('sk_v5');
+    var s=localStorage.getItem('sk_v6');
     if(!s)return;
     var d=JSON.parse(s);
     if(!d||!d.prods||!d.prods.length)return;
@@ -376,7 +393,7 @@ var formRowCount=0,rawRows=[],rawHeaders=[],rawDataStart=1;
   addFormRow();
 })();
 
-function save(n){try{localStorage.setItem('sk_v5',JSON.stringify({name:n,prods:prods}));}catch(e){}}
+function save(n){try{localStorage.setItem('sk_v6',JSON.stringify({name:n,prods:prods}));}catch(e){}}
 function buildSel(){
   var s=document.getElementById('ms');
   s.innerHTML='<option value="">모델 선택...</option>'+prods.map(function(p){
@@ -392,281 +409,162 @@ function applyProds(name){
   setTimeout(function(){document.getElementById('ca').scrollIntoView({behavior:'smooth',block:'start'});},120);
 }
 function reupload(){
-  try{localStorage.removeItem('sk_v5');}catch(e){}
-  prods=[];selProd=null;
+  try{localStorage.removeItem('sk_v6');}catch(e){}
+  prods=[];selProd=null;parsedProds=null;
   document.getElementById('sv').classList.remove('on');
   document.getElementById('up-area').style.display='block';
   document.getElementById('ca').style.display='none';
-  document.getElementById('map-box').classList.remove('show');
+  document.getElementById('ai-parsing').classList.remove('show');
+  document.getElementById('parse-result').classList.remove('show');
+  document.getElementById('parse-err').classList.remove('show');
   document.getElementById('fi').value='';
 }
 function switchTab(t){[1,2,3].forEach(function(i){document.getElementById('tab'+i).classList.toggle('on',i===t);document.getElementById('method'+i).style.display=i===t?'block':'none';});}
 function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
 function dol(){document.getElementById('dz').classList.remove('over');}
-function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)procFile(f);}
-function hf(inp){var f=inp.files[0];if(f)procFile(f);}
+function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)processWithAI(f);}
+function hf(inp){var f=inp.files[0];if(f)processWithAI(f);}
 
-// ========== 스마트 파싱 핵심 함수 ==========
+// ========== AI 파일 분석 ==========
+async function processWithAI(f){
+  // UI 초기화
+  document.getElementById('dz').style.display='none';
+  document.getElementById('ai-parsing').classList.add('show');
+  document.getElementById('parse-result').classList.remove('show');
+  document.getElementById('parse-err').classList.remove('show');
 
-// 사이즈 문자열 파싱: "600*1200", "600 * 1200", "600x1200", "600×1200"
-function parseSize(val){
-  val=String(val||'').trim();
-  var m=val.match(/(\d+\.?\d*)\s*[*×xX×]\s*(\d+\.?\d*)/);
-  if(m)return{w:parseFloat(m[1]),h:parseFloat(m[2])};
-  return null;
-}
+  try{
+    // 파일 읽기
+    var rows = await readFile(f);
+    if(!rows||rows.length<2){throw new Error('파일에 데이터가 없습니다.');}
 
-// 숫자 추출 (쉼표, 원, 공백 제거)
-function cleanNum(val){
-  return parseFloat(String(val||'').replace(/[,₩원\s]/g,''));
-}
+    // 상위 20행만 AI에게 전달 (토큰 절약)
+    var preview = rows.slice(0, 20).map(function(r){return r.join('\t');}).join('\n');
 
-// 열 타입 판별
-// 반환: 'id'(번호), 'model'(모델명), 'size'(WxH), 'width'(가로), 'height'(세로), 'area'(헤베), 'price'(단가), 'unknown'
-function detectColType(header, sampleVals){
-  var h=(header||'').toLowerCase().replace(/[\s\(\)\/]/g,'');
-  var nums=sampleVals.map(cleanNum).filter(function(v){return !isNaN(v)&&v>0;});
-  var sizeCount=sampleVals.filter(function(v){return parseSize(v)!==null;}).length;
-  var textCount=sampleVals.filter(function(v){var n=cleanNum(v);return isNaN(n)&&String(v).trim().length>0;}).length;
+    var prompt = '다음은 인테리어 자재 단가표 파일의 내용입니다.\n\n'+preview+'\n\n'
+      +'이 데이터에서 각 제품의 정보를 추출해주세요.\n'
+      +'반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요:\n'
+      +'{"products":[{"model":"모델명","w":가로mm숫자,"h":세로mm숫자,"p":단가원숫자}]}\n\n'
+      +'규칙:\n'
+      +'- 사이즈가 "600 * 1200" 또는 "600x1200" 형식이면 w=600, h=1200으로 분리\n'
+      +'- 단가는 숫자만 (원, 쉼표 제거)\n'
+      +'- 헤더행, 제목행, 합계행은 제외\n'
+      +'- 모델명이 없으면 "제품1", "제품2" 등으로 자동 생성\n'
+      +'- 모든 행의 모든 제품을 추출 (최대 100개)\n'
+      +'- w와 h는 반드시 mm 단위 숫자 (예: 600, 1200)\n'
+      +'- p는 장당 단가 (면적 단가가 아닌 장당 단가)';
 
-  // 헤더 기반 우선 판별
-  if(/(model|모델|품명|제품|타일|이름|name|tile|품목|코드|번호|no|num)/i.test(h)&&textCount>=1) return 'model';
-  if(/(단가|price|가격|금액|원|cost|단)/i.test(h)) return 'price';
-  if(/(사이즈|size|규격|mm)/i.test(h)&&sizeCount>=1) return 'size';
-  if(/(가로|width|폭|w$)/i.test(h)) return 'width';
-  if(/(세로|height|길이|h$)/i.test(h)) return 'height';
-  if(/(면적|헤베|hb|㎡|m²|area)/i.test(h)) return 'area';
-
-  // 값 기반 판별
-  if(sizeCount>=2) return 'size';
-  if(textCount>=2&&nums.length<2) return 'model';
-  if(nums.length>=2){
-    var avg=nums.reduce(function(a,b){return a+b;})/nums.length;
-    var allSeq=nums.every(function(v,i){return i===0||Math.abs(v-(nums[i-1]+1))<=2;});
-    if(allSeq&&avg<50) return 'id';
-    if(avg>=100&&avg<=9999&&nums.every(function(v){return v>=50&&v<=9999;})) {
-      // 구분: 가로/세로는 50~9999, 단가는 보통 >1000이고 가로세로보다 훨씬 크거나 특정 패턴
-      var hasLarge=nums.some(function(v){return v>10000;});
-      if(hasLarge) return 'price';
-      return 'width'; // 가로 or 세로 (나중에 두번째 숫자열은 세로로)
-    }
-    if(avg>1000) return 'price';
-    if(avg>0&&avg<10) return 'area';
-  }
-  return 'unknown';
-}
-
-function procFile(f){
-  var n=f.name.toLowerCase();
-  if(n.endsWith('.csv')){
-    var r=new FileReader();
-    r.onload=function(e){
-      var lines=e.target.result.split(/\r?\n/).filter(function(l){return l.trim();});
-      var rows=lines.map(function(l){return l.split(',').map(function(c){return c.trim().replace(/^"|"$/g,'');});});
-      analyzeAndShow(rows,f.name);
-    };
-    r.readAsText(f,'UTF-8');
-  }else if(n.endsWith('.xlsx')||n.endsWith('.xls')){
-    var r=new FileReader();
-    r.onload=function(e){
-      try{
-        var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
-        var ws=wb.Sheets[wb.SheetNames[0]];
-        var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(r){
-          return r.map(function(c){return c===null||c===undefined?'':String(c);});
-        });
-        analyzeAndShow(rows,f.name);
-      }catch(err){alert('파일 읽기 실패: '+err.message);}
-    };
-    r.readAsArrayBuffer(f);
-  }else{alert('CSV, XLSX, XLS 파일만 지원합니다');}
-}
-
-function analyzeAndShow(rows,fname){
-  if(!rows||rows.length<2){alert('데이터가 없습니다.');return;}
-  rawRows=rows;
-
-  // 1. 실제 데이터 행 찾기 (숫자가 있는 첫 행)
-  var dataStart=0;
-  for(var i=0;i<Math.min(rows.length,6);i++){
-    var hasNum=rows[i].some(function(c){var n=cleanNum(c);return !isNaN(n)&&n>10;});
-    if(hasNum){dataStart=i;break;}
-    dataStart=i+1;
-  }
-  rawDataStart=dataStart;
-
-  // 2. 헤더 행 = 데이터 시작 바로 위 행 (없으면 자동 생성)
-  if(dataStart>0){
-    rawHeaders=rows[dataStart-1].map(function(h,i){return String(h||'열'+(i+1));});
-  }else{
-    rawHeaders=rows[0].map(function(_,i){return '열'+(i+1);});
-  }
-
-  var dataRows=rows.slice(dataStart);
-  if(!dataRows.length){alert('유효한 데이터를 찾지 못했습니다.');return;}
-
-  // 3. 각 열의 샘플값 추출 및 타입 판별
-  var ncols=rawHeaders.length;
-  var colTypes=[];
-  for(var ci=0;ci<ncols;ci++){
-    var samples=dataRows.slice(0,5).map(function(r){return r[ci]||'';});
-    colTypes.push(detectColType(rawHeaders[ci],samples));
-  }
-
-  // 4. 역할 배정
-  var gM=-1,gW=-1,gH=-1,gP=-1,gSize=-1;
-  // 우선순위: 명확한 타입부터
-  colTypes.forEach(function(t,i){
-    if(t==='model'&&gM<0)gM=i;
-    if(t==='size'&&gSize<0)gSize=i;
-    if(t==='price'&&gP<0)gP=i;
-    if(t==='width'&&gW<0)gW=i;
-    if(t==='height'&&gH<0)gH=i;
-  });
-
-  // size 열이 있으면 가로=세로=size (나중에 분리)
-  if(gSize>=0){gW=gSize;gH=gSize;}
-
-  // 아직 못찾은 것들: 숫자 열로 채우기
-  var numCols=[];
-  colTypes.forEach(function(t,i){if(['width','height','area','price','id'].indexOf(t)>=0||(!isNaN(cleanNum(dataRows[0]&&dataRows[0][i]))&&cleanNum(dataRows[0][i])>0))numCols.push(i);});
-
-  if(gP<0){
-    // 가장 큰 평균값 가진 열 = 단가
-    var best=-1,bestAvg=0;
-    numCols.forEach(function(ci){
-      if(ci===gW||ci===gH||ci===gSize)return;
-      var vals=dataRows.slice(0,5).map(function(r){return cleanNum(r[ci]);}).filter(function(v){return !isNaN(v)&&v>0;});
-      if(!vals.length)return;
-      var avg=vals.reduce(function(a,b){return a+b;})/vals.length;
-      if(avg>bestAvg){bestAvg=avg;best=ci;}
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
+        system:'인테리어 자재 단가표 데이터 추출 전문가. 반드시 순수 JSON만 응답.',
+        messages:[{role:'user',content:prompt}]
+      })
     });
-    if(best>=0)gP=best;
+
+    var data = await res.json();
+    var text = (data.content&&data.content[0]&&data.content[0].text)||'';
+
+    // JSON 파싱
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('AI가 데이터를 인식하지 못했습니다.');
+    var parsed = JSON.parse(jsonMatch[0]);
+    var products = parsed.products||[];
+    products = products.filter(function(p){return p.model&&p.w>0&&p.h>0&&p.p>0;});
+
+    if(!products.length)throw new Error('유효한 제품 데이터를 찾지 못했습니다.\n파일에 모델명·사이즈·단가가 포함되어 있는지 확인해주세요.');
+
+    parsedProds = products;
+    showParseResult(products, f.name);
+
+  }catch(err){
+    document.getElementById('ai-parsing').classList.remove('show');
+    document.getElementById('dz').style.display='block';
+    document.getElementById('parse-err').classList.add('show');
+    document.getElementById('parse-err-msg').textContent = err.message||'알 수 없는 오류가 발생했습니다.';
   }
-  if(gM<0){
-    // 텍스트가 가장 많은 열 = 모델명
-    var best=-1,bestTxt=0;
-    for(var ci=0;ci<ncols;ci++){
-      if(ci===gW||ci===gH||ci===gP)continue;
-      var cnt=dataRows.slice(0,5).filter(function(r){var n=cleanNum(r[ci]);return isNaN(n)&&String(r[ci]).trim().length>0;}).length;
-      if(cnt>bestTxt){bestTxt=cnt;best=ci;}
-    }
-    if(best>=0)gM=best;
-  }
-  if(gW<0||gH<0){
-    var remaining=numCols.filter(function(ci){return ci!==gP&&ci!==gM;});
-    // 중간 크기 열들(50~9999) = 가로세로
-    var sizeRange=remaining.filter(function(ci){
-      var vals=dataRows.slice(0,5).map(function(r){return cleanNum(r[ci]);}).filter(function(v){return !isNaN(v);});
-      return vals.length>0&&vals.every(function(v){return v>=50&&v<=9999;});
-    });
-    if(gW<0&&sizeRange.length>0)gW=sizeRange[0];
-    if(gH<0&&sizeRange.length>1)gH=sizeRange[1];
-  }
-
-  // 5. 미리보기
-  var prev='<table><tr>';
-  rawHeaders.forEach(function(h){prev+='<th>'+h+'</th>';});prev+='</tr>';
-  dataRows.slice(0,3).forEach(function(r){prev+='<tr>';rawHeaders.forEach(function(_,i){prev+='<td>'+(r[i]||'')+'</td>';});prev+='</tr>';});
-  prev+='</table>';
-  document.getElementById('map-preview').innerHTML=prev;
-
-  // 6. 드롭다운
-  var opts='<option value="-1">— 해당 없음 —</option>'+rawHeaders.map(function(h,i){return '<option value="'+i+'">'+h+'</option>';}).join('');
-  ['col-model','col-w','col-h','col-p'].forEach(function(id){document.getElementById(id).innerHTML=opts;});
-  document.getElementById('col-model').value=gM>=0?gM:-1;
-  document.getElementById('col-w').value=gW>=0?gW:-1;
-  document.getElementById('col-h').value=gH>=0?gH:-1;
-  document.getElementById('col-p').value=gP>=0?gP:-1;
-
-  document.getElementById('map-box').classList.add('show');
-  document.getElementById('map-box').dataset.fname=fname;
-
-  // 안내 메시지
-  var sizeMode=(gW>=0&&gW===gH);
-  document.getElementById('map-sub-txt').textContent=sizeMode
-    ?'사이즈 열(600*1200 형식)을 감지했어요. 가로·세로를 자동으로 분리합니다. 틀린 게 있으면 수정해주세요.'
-    :'자동으로 감지했어요. 틀린 게 있으면 드롭다운에서 수정하세요.';
 }
 
-function confirmMapping(){
-  var cm=parseInt(document.getElementById('col-model').value);
-  var cw=parseInt(document.getElementById('col-w').value);
-  var ch=parseInt(document.getElementById('col-h').value);
-  var cp=parseInt(document.getElementById('col-p').value);
-  var dataRows=rawRows.slice(rawDataStart);
-  var sizeMode=(cw>=0&&cw===ch);
-  var p2=[];
-  dataRows.forEach(function(r){
-    var model=cm>=0?String(r[cm]||'').trim():'';
-    if(!model)return;
-    var pVal=cleanNum(r[cp]);
-    var w,h;
-    if(sizeMode){
-      var sz=parseSize(r[cw]);
-      if(sz){w=sz.w;h=sz.h;}
-      else{
-        // 사이즈 열인데 파싱 실패 → 두 숫자 추출 시도
-        var nums=String(r[cw]||'').match(/\d+/g);
-        if(nums&&nums.length>=2){w=parseFloat(nums[0]);h=parseFloat(nums[1]);}
-        else return;
-      }
-    }else{
-      w=cleanNum(r[cw]);
-      h=cleanNum(r[ch]);
-    }
-    if(model&&!isNaN(w)&&!isNaN(h)&&!isNaN(pVal)&&w>0&&h>0&&pVal>0)
-      p2.push({model:model,w:w,h:h,p:pVal});
+async function readFile(f){
+  return new Promise(function(resolve,reject){
+    var n=f.name.toLowerCase();
+    if(n.endsWith('.csv')){
+      var r=new FileReader();
+      r.onload=function(e){
+        var lines=e.target.result.split(/\r?\n/).filter(function(l){return l.trim();});
+        resolve(lines.map(function(l){return l.split(',').map(function(c){return c.trim().replace(/^"|"$/g,'');});}));
+      };
+      r.onerror=reject;
+      r.readAsText(f,'UTF-8');
+    }else if(n.endsWith('.xlsx')||n.endsWith('.xls')){
+      var r=new FileReader();
+      r.onload=function(e){
+        try{
+          var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+          var ws=wb.Sheets[wb.SheetNames[0]];
+          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(r){
+            return r.map(function(c){return String(c===null||c===undefined?'':c);});
+          });
+          resolve(rows);
+        }catch(err){reject(err);}
+      };
+      r.onerror=reject;
+      r.readAsArrayBuffer(f);
+    }else{reject(new Error('CSV, XLSX, XLS 파일만 지원합니다'));}
   });
-  if(!p2.length){alert('유효한 데이터가 없습니다.\n열 선택을 다시 확인해주세요.');return;}
-  prods=p2;applyProds(document.getElementById('map-box').dataset.fname||'파일');
 }
 
-// 구글시트 붙여넣기 (완전 자동)
-function smartParseLine(line){
-  line=line.trim();if(!line)return null;
-  var parts=line.indexOf('\t')>=0?line.split('\t'):line.split(',');
-  parts=parts.map(function(p){return p.trim().replace(/^"|"$/g,'');});
-  if(parts.length<2)return null;
-
-  var model='',w=0,h=0,p=0;
-  var nums=[],texts=[],sizes=[];
-
-  parts.forEach(function(v){
-    var sz=parseSize(v);
-    if(sz){sizes.push(sz);return;}
-    var n=cleanNum(v);
-    if(!isNaN(n)&&n>0)nums.push(n);
-    else if(v.length>0)texts.push(v);
-  });
-
-  if(texts.length>0)model=texts[0];
-  if(sizes.length>0){w=sizes[0].w;h=sizes[0].h;}
-  else if(nums.length>=2){
-    // 가로세로 = 50~9999 범위, 단가 = 가장 큰 값
-    var dimNums=nums.filter(function(v){return v>=50&&v<=9999;});
-    var priceNums=nums.filter(function(v){return v>9999;});
-    if(dimNums.length>=2){w=dimNums[0];h=dimNums[1];}
-    if(priceNums.length>0)p=Math.max.apply(null,priceNums);
-    else if(nums.length>2)p=Math.max.apply(null,nums);
-    else if(nums.length===1)p=nums[0];
-  }else if(nums.length===1){p=nums[0];}
-
-  if(!p&&nums.length>0)p=nums[nums.length-1];
-
-  if(!model||w<=0||h<=0||p<=0)return null;
-  return{model:model,w:w,h:h,p:p};
+function showParseResult(products, fname){
+  document.getElementById('ai-parsing').classList.remove('show');
+  document.getElementById('parse-result').classList.add('show');
+  document.getElementById('parse-count').textContent=products.length;
+  // 미리보기 (최대 5개)
+  var items=document.getElementById('parse-items');
+  items.innerHTML=products.slice(0,5).map(function(p){
+    return '<span class="parse-item">'+p.model+' '+p.w+'×'+p.h+'mm</span>';
+  }).join('')+(products.length>5?'<span class="parse-item">+'+（products.length-5)+'개 더</span>':'');
+  document.getElementById('parse-result').dataset.fname=fname;
 }
 
-function applyPaste(){
+function applyParsed(){
+  if(!parsedProds||!parsedProds.length)return;
+  prods=parsedProds;
+  applyProds(document.getElementById('parse-result').dataset.fname||'파일');
+}
+
+// 구글시트 붙여넣기도 AI 처리
+async function applyPaste(){
   var txt=(document.getElementById('pt').value||'').trim();
   var err=document.getElementById('perr2');err.classList.remove('on');
   if(!txt){err.textContent='내용을 붙여넣어 주세요.';err.classList.add('on');return;}
-  var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
-  var p2=[];
-  lines.forEach(function(l){var r=smartParseLine(l);if(r)p2.push(r);});
-  if(!p2.length){err.textContent='인식된 행이 없습니다. 모델명과 사이즈·단가가 포함된 행인지 확인해주세요.';err.classList.add('on');return;}
-  prods=p2;applyProds('시트 붙여넣기 ('+p2.length+'개)');
+
+  var btn=document.querySelector('#method2 .apply-btn');
+  btn.textContent='AI가 분석 중...';btn.disabled=true;
+
+  try{
+    var prompt='다음 텍스트는 인테리어 자재 단가표입니다.\n\n'+txt.slice(0,3000)+'\n\n'
+      +'각 제품 정보를 추출해서 JSON으로만 응답:\n'
+      +'{"products":[{"model":"모델명","w":가로mm,"h":세로mm,"p":단가}]}\n'
+      +'사이즈 "600*1200"이면 w=600,h=1200으로 분리. 헤더/제목행 제외.';
+
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:'JSON만 응답.',messages:[{role:'user',content:prompt}]})});
+    var data=await res.json();
+    var text=(data.content&&data.content[0]&&data.content[0].text)||'';
+    var jsonMatch=text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('인식 실패');
+    var parsed=JSON.parse(jsonMatch[0]);
+    var products=(parsed.products||[]).filter(function(p){return p.model&&p.w>0&&p.h>0&&p.p>0;});
+    if(!products.length)throw new Error('유효한 데이터 없음');
+    prods=products;
+    applyProds('붙여넣기 ('+products.length+'개)');
+  }catch(e){
+    err.textContent='인식에 실패했습니다. 다시 시도해주세요.';err.classList.add('on');
+  }
+  btn.textContent='✓ 단가표 적용하기';btn.disabled=false;
 }
 
 function addFormRow(){
@@ -758,7 +656,7 @@ function renderResult(c,lr){
   document.getElementById('ri').innerHTML='<div class="rsec"><div class="rsec-t">총 금액</div><div class="rrow"><span class="rkey">기본 금액</span><span class="rval sm">'+tP.toLocaleString()+'원</span></div><div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tPL.toLocaleString()+'원</span></div></div><div class="rsec"><div class="rsec-t">총 수량</div><div class="rrow"><span class="rkey">기본 수량</span><span class="rval sm">'+tQ+'장</span></div><div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tQL+'장</span></div></div><div class="rsec">'+rows+'</div>';
 }
 function doRestart(){
-  sp=null;selProd=null;cache=null;wc={a:0,b:0};wl={a:[],b:[]};wm={a:{},b:{}};
+  sp=null;selProd=null;cache=null;parsedProds=null;wc={a:0,b:0};wl={a:[],b:[]};wm={a:{},b:{}};
   document.getElementById('aw').innerHTML='';document.getElementById('bwalls').innerHTML='';
   ['bw','bht','bp'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('bhn').textContent='';document.getElementById('aiq').value='';document.getElementById('aia').classList.remove('on');
@@ -766,6 +664,10 @@ function doRestart(){
   document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');
   ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
   document.getElementById('rc').classList.remove('on');
+  document.getElementById('dz').style.display='block';
+  document.getElementById('ai-parsing').classList.remove('show');
+  document.getElementById('parse-result').classList.remove('show');
+  document.getElementById('parse-err').classList.remove('show');
   document.getElementById('ls').value=10;document.getElementById('ln').value=10;
   document.getElementById('lh').textContent='기본 10% · 조절하거나 직접 입력하세요';
   window.scrollTo({top:0,behavior:'smooth'});
