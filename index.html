@@ -604,86 +604,136 @@ function pSize(v){
   var m=String(v||'').match(/(\d+)\s*[*×xX]\s*(\d+)/);
   return m?{w:+m[1],h:+m[2]}:null;
 }
+// 모델명처럼 생긴 값인지 체크 (영문+숫자 조합, 또는 순수 텍스트)
+function isModelLike(v){
+  var s=String(v||'').trim();
+  if(!s)return false;
+  // 영문자 포함된 경우 → 모델명
+  if(/[a-zA-Z가-힣]/.test(s))return true;
+  return false;
+}
 
 function smartParse(rows){
-  // 데이터 시작 행 찾기
-  var ds=0;
-  for(var i=0;i<Math.min(rows.length,8);i++){
-    if(rows[i].some(function(c){var n=pNum(c);return !isNaN(n)&&n>10;})){ds=i;break;}
-    ds=i+1;
+  if(!rows||rows.length<2)return[];
+
+  // 1. 헤더 행 찾기: 2개 이상의 비어있지 않은 셀이 있는 첫 행
+  var headerIdx=-1, dataIdx=-1;
+  for(var i=0;i<Math.min(rows.length,10);i++){
+    var filled=rows[i].filter(function(c){return String(c).trim().length>0;}).length;
+    if(filled>=2){
+      // 이 행이 순수 숫자만 있으면 데이터 행, 아니면 헤더 후보
+      var hasText=rows[i].some(function(c){var n=pNum(c);return isNaN(n)&&String(c).trim().length>0;});
+      if(hasText&&headerIdx<0)headerIdx=i;
+      else if(headerIdx>=0&&dataIdx<0){dataIdx=i;break;}
+    }
   }
-  var headers=ds>0?rows[ds-1]:rows[0].map(function(_,i){return '열'+(i+1);});
-  var data=rows.slice(ds).filter(function(r){return r.some(function(c){return String(c).trim();});});
+  // 헤더 못찾으면 첫 행을 헤더로
+  if(headerIdx<0)headerIdx=0;
+  if(dataIdx<0)dataIdx=headerIdx+1;
+
+  var headers=rows[headerIdx].map(function(h,i){return String(h||'열'+(i+1));});
+  var data=rows.slice(dataIdx).filter(function(r){
+    return r.some(function(c){var n=pNum(c);return !isNaN(n)&&n>0;});
+  });
   if(!data.length)return[];
 
-  var nc=Math.max.apply(null,data.map(function(r){return r.length;}));
+  var nc=Math.max.apply(null,[headers.length].concat(data.map(function(r){return r.length;})));
 
-  // 각 열 분석
+  // 2. 각 열 분석
   var cols=[];
   for(var ci=0;ci<nc;ci++){
-    var hdr=String(headers[ci]||'').toLowerCase();
+    var hdr=String(headers[ci]||'').toLowerCase().replace(/[\s\(\)]/g,'');
     var vals=data.slice(0,8).map(function(r){return r[ci]||'';});
     var nums=vals.map(pNum).filter(function(n){return !isNaN(n)&&n>0;});
     var sizes=vals.filter(function(v){return pSize(v)!==null;});
     var texts=vals.filter(function(v){var n=pNum(v);return isNaN(n)&&String(v).trim().length>1;});
     var avg=nums.length?nums.reduce(function(a,b){return a+b;})/nums.length:0;
+    var inDimRange=nums.length>0&&avg>=50&&avg<=9999;
+    var inPriceRange=avg>1000;
+    // 모델명처럼 생긴 값이 많으면 모델열 (영문+숫자 혼합 등)
+    var modelLikes=vals.filter(isModelLike).length;
+    // 헤더에 사이즈/규격/mm 있거나 WxH 패턴 있을 때만 사이즈 열로 강하게 인식
+    var hdrIsSizeHint=/(사이즈|size|규격|mm|가로|세로|width|height)/i.test(hdr);
     cols.push({
-      ci:ci, hdr:hdr, avg:avg,
-      modelScore:(/(모델|타일|품명|제품|name|model|tile|item|코드|품목|이름)/i.test(hdr)?3:0)+(texts.length>=2?2:0),
-      sizeScore: (/(사이즈|size|규격|mm)/i.test(hdr)?3:0)+(sizes.length>=2?3:0),
-      wScore:    (/(가로|width|폭)/i.test(hdr)?3:0),
-      hScore:    (/(세로|height|길이)/i.test(hdr)?3:0),
-      priceScore:(/(단가|price|가격|금액|원|cost)/i.test(hdr)?3:0)+(avg>5000?2:0),
-      hasSizes:sizes.length, hasTexts:texts.length, hasNums:nums.length
+      ci:ci, hdr:hdr, avg:avg, nums:nums,
+      modelScore: (/(모델|타일|품명|제품|name|model|tile|item|코드|품목|이름|code)/i.test(hdr)?4:0)+(modelLikes>=2?modelLikes:0)+(texts.length>=2?texts.length:0),
+      sizeScore:  (/(사이즈|size|규격|mm)/i.test(hdr)?4:0)+(sizes.length>=2?4:0),
+      wScore:     (/(가로|width|폭)/i.test(hdr)?4:0)+(inDimRange&&hdrIsSizeHint?1:0),
+      hScore:     (/(세로|height|길이)/i.test(hdr)?4:0)+(inDimRange&&hdrIsSizeHint?1:0),
+      priceScore: (/(단가|price|가격|금액|원|cost)/i.test(hdr)?4:0)+(inPriceRange?2:0)+(avg>10000?2:0),
+      // dimScore: WxH 패턴이 있거나 헤더에 사이즈 힌트 있을 때만 점수 부여
+      dimScore:   (inDimRange&&(hdrIsSizeHint||sizes.length>0))?nums.length:0,
+      hasSizes:sizes.length, hasTexts:texts.length, hasNums:nums.length, modelLikes:modelLikes
     });
   }
 
-  // 역할 배정
+  // 3. 역할 배정
   var gM=-1, gW=-1, gH=-1, gP=-1, gS=-1;
 
-  // 사이즈 열
+  // WxH 사이즈 열 (600*1200 형식)
   var sCol=cols.filter(function(c){return c.sizeScore>0;}).sort(function(a,b){return b.sizeScore-a.sizeScore;});
   if(sCol.length)gS=sCol[0].ci;
 
-  // 모델명 열
-  var mCol=cols.filter(function(c){return c.ci!==gS&&c.modelScore>0;}).sort(function(a,b){return b.modelScore-a.modelScore;});
-  if(mCol.length)gM=mCol[0].ci;
-
-  // 단가 열 (가장 큰 평균, 모델/사이즈 열 제외)
-  var pCol=cols.filter(function(c){return c.ci!==gM&&c.ci!==gS&&c.hasNums>0;}).sort(function(a,b){return b.priceScore-a.priceScore||b.avg-a.avg;});
+  // 단가 열: 가장 큰 평균값 가진 숫자 열
+  var pCol=cols.filter(function(c){return c.ci!==gS&&c.hasNums>0;}).sort(function(a,b){return b.priceScore-a.priceScore||b.avg-a.avg;});
   if(pCol.length)gP=pCol[0].ci;
 
-  if(gS<0){
-    // 가로/세로 별도 열
-    var dimCols=cols.filter(function(c){return c.ci!==gM&&c.ci!==gP&&c.avg>=50&&c.avg<=9999;});
-    var wCol=dimCols.sort(function(a,b){return b.wScore-a.wScore;});
-    if(wCol.length)gW=wCol[0].ci;
-    var hCol=dimCols.filter(function(c){return c.ci!==gW;}).sort(function(a,b){return b.hScore-a.hScore;});
-    if(hCol.length)gH=hCol[0].ci;
-  }
-
-  // 모델명 못찾으면 텍스트 많은 열
+  // 모델명 열: modelLike(영문+숫자 혼합) 값 많은 열 우선, 그다음 텍스트 많은 열
+  var mCol=cols.filter(function(c){return c.ci!==gS&&c.ci!==gP;}).sort(function(a,b){
+    // modelLike 점수 높은 것 우선
+    var diff=(b.modelLikes||0)-(a.modelLikes||0);
+    if(diff!==0)return diff;
+    return b.modelScore-a.modelScore;
+  });
+  if(mCol.length&&(mCol[0].modelScore>0||mCol[0].modelLikes>0))gM=mCol[0].ci;
+  // 모델명 못찾으면 텍스트 있는 첫 열
   if(gM<0){
-    var tCol=cols.filter(function(c){return c.ci!==gS&&c.ci!==gW&&c.ci!==gH&&c.ci!==gP&&c.hasTexts>=2;});
-    if(tCol.length)gM=tCol[0].ci;
+    for(var ci2=0;ci2<nc;ci2++){
+      if(ci2===gS||ci2===gP)continue;
+      if(cols[ci2]&&cols[ci2].hasTexts>=2){gM=ci2;break;}
+    }
   }
 
-  // 파싱
+  if(gS<0){
+    // 가로/세로 별도 열 찾기
+    var dimCols=cols.filter(function(c){return c.ci!==gM&&c.ci!==gP&&c.dimScore>0;})
+      .sort(function(a,b){return b.wScore-a.wScore||b.dimScore-a.dimScore;});
+
+    if(dimCols.length>=2){
+      gW=dimCols[0].ci;
+      // 세로 열: 남은 것 중 hScore 높은 것
+      var hDim=dimCols.filter(function(c){return c.ci!==gW;}).sort(function(a,b){return b.hScore-a.hScore;});
+      if(hDim.length)gH=hDim[0].ci;
+    }else if(dimCols.length===1){
+      // 사이즈 열이 하나만 있으면 → W와 H 동일하게 사용
+      gW=dimCols[0].ci;
+      gH=dimCols[0].ci; // 같은 열 사용 (정사각형 가정)
+    }
+  }
+
+  // 4. 파싱
   var result=[];
   var idx=1;
   data.forEach(function(r){
     var model=gM>=0?String(r[gM]||'').trim():'제품'+idx;
-    if(!model)model='제품'+idx;
-    var price=pNum(r[gP]);
+    // 숫자만 있는 모델명(번호) 스킵
+    if(!model||(!isNaN(parseFloat(model))&&model.length<4))model='제품'+idx;
+    var price=gP>=0?pNum(r[gP]):0;
     var w,h;
     if(gS>=0){
       var sz=pSize(r[gS]);
       if(sz){w=sz.w;h=sz.h;}
-      else{var ns=String(r[gS]||'').match(/\d+/g);if(ns&&ns.length>=2){w=+ns[0];h=+ns[1];}else return;}
+      else{
+        var ns=String(r[gS]||'').match(/\d+/g);
+        if(ns&&ns.length>=2){w=+ns[0];h=+ns[1];}
+        else if(ns&&ns.length===1){w=+ns[0];h=+ns[0];} // 하나만 있으면 정사각형
+        else return;
+      }
     }else{
-      w=pNum(r[gW]);h=pNum(r[gH]);
+      w=pNum(r[gW]);
+      h=(gH===gW)?w:pNum(r[gH]); // 같은 열이면 w=h
     }
-    if(!isNaN(w)&&!isNaN(h)&&!isNaN(price)&&w>0&&h>0&&price>0){
+    if(!isNaN(w)&&!isNaN(h)&&w>0&&h>0&&!isNaN(price)&&price>0){
       result.push({model:model,w:w,h:h,p:price});idx++;
     }
   });
