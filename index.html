@@ -3,49 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STONE KIM | 스톤킴 인테리어 건축자재 수량 계산기</title>
-<meta name="description" content="스톤킴 인테리어 건축자재 수량 계산기">
+<title>STONE KIM | 인테리어 건축자재 수량 계산기</title>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;min-height:100vh;}
+body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
 .wrap{max-width:520px;margin:0 auto;}
-.site-header{background:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.header-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.logo-main{font-size:15px;font-weight:800;color:#111;letter-spacing:-.02em;text-decoration:none;}
-.logo-main span{color:#e55a1c;}
-.logo-sep{font-size:12px;color:#ddd;}.logo-sub{font-size:11px;color:#999;font-weight:500;}
-.header-nav a{font-size:12px;font-weight:600;color:#888;text-decoration:none;padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;}
-.header-nav a:hover{color:#e55a1c;border-color:#e55a1c;}
-.yt-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;}
-.yt-wrap iframe{width:100%;height:100%;border:none;display:block;}
-.yt-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:16px 20px;pointer-events:none;}
-.yt-overlay-text{font-size:13px;color:rgba(255,255,255,.95);font-weight:600;}
-.yt-overlay-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
-.banner{background:linear-gradient(135deg,#e55a1c,#c44010);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;}
-.banner:hover{opacity:.93;}
-.bt{font-size:14px;font-weight:700;color:#fff;} .bs{font-size:11px;color:rgba(255,255,255,.8);margin-top:3px;}
-.bcta{padding:9px 18px;background:#fff;border:none;border-radius:8px;color:#e55a1c;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* 헤더 */
+.hdr{background:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.hdr-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.logo-a{font-size:16px;font-weight:800;color:#111;text-decoration:none;letter-spacing:-.02em;}
+.logo-a span{color:#e55a1c;}
+.logo-sep{font-size:12px;color:#ddd;}
+.logo-sub{font-size:11px;color:#aaa;font-weight:500;}
+
+/* 유튜브 */
+.yt{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;}
+.yt iframe{width:100%;height:100%;border:none;display:block;}
+.yt-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:14px 18px;pointer-events:none;}
+.yt-t{font-size:13px;color:#fff;font-weight:600;}
+.yt-s{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
+
+/* 배너 */
+.bnr{background:linear-gradient(135deg,#e55a1c,#c44010);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;}
+.bnr:hover{opacity:.93;}
+.bnr-t{font-size:14px;font-weight:700;color:#fff;}
+.bnr-s{font-size:11px;color:rgba(255,255,255,.8);margin-top:3px;}
+.bnr-btn{padding:9px 18px;background:#fff;border:none;border-radius:8px;color:#e55a1c;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* 캐치카피 */
+.catch{background:#fff;padding:20px 20px;border-bottom:1px solid #f0f0f0;}
+.catch-title{font-size:20px;font-weight:800;color:#111;line-height:1.5;}
+.catch-title em{color:#e55a1c;font-style:normal;}
+
+/* 컨텐츠 */
 .content{padding:16px 16px 60px;}
+
+/* 카드 */
 .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.07);}
 .card.locked{opacity:.38;pointer-events:none;background:#f8f8f8;}
 .ch{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
 .num{width:28px;height:28px;border-radius:50%;background:#e55a1c;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.num.done{background:#22c55e;} .num.locked{background:#ddd;color:#aaa;}
-.ctitle{font-size:16px;font-weight:700;} .csub{font-size:12px;color:#999;margin-top:2px;}
+.num.done{background:#22c55e;}
+.num.locked{background:#ddd;color:#aaa;}
+.ctitle{font-size:16px;font-weight:700;}
+.csub{font-size:12px;color:#999;margin-top:2px;}
+
+/* 선택 버튼 */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .choice{padding:22px 10px;border:2px solid #eee;border-radius:14px;background:#fafafa;cursor:pointer;text-align:center;transition:all .15s;}
 .choice:hover,.choice.on{border-color:#e55a1c;background:#fff3ee;}
-.ci{font-size:30px;margin-bottom:8px;} .cn{font-size:16px;font-weight:700;color:#555;}
+.ci{font-size:30px;margin-bottom:8px;}
+.cn{font-size:16px;font-weight:700;color:#555;}
 .choice.on .cn{color:#e55a1c;}
-.yn-btn{padding:16px;border:2px solid #eee;border-radius:12px;background:#fafafa;cursor:pointer;text-align:center;transition:all .15s;}
-.yn-btn:hover{border-color:#e55a1c;}
-.yn-btn.yes-on{border-color:#22c55e;background:#f0fdf4;} .yn-btn.no-on{border-color:#6366f1;background:#f5f3ff;}
+.yn{padding:16px;border:2px solid #eee;border-radius:12px;background:#fafafa;cursor:pointer;text-align:center;transition:all .15s;}
+.yn:hover{border-color:#e55a1c;}
+.yn.yes-on{border-color:#22c55e;background:#f0fdf4;}
+.yn.no-on{border-color:#6366f1;background:#f5f3ff;}
 .yn-n{font-size:16px;font-weight:700;}
-.yes .yn-n{color:#16a34a;} .no .yn-n{color:#6366f1;}
+.yn.yes-on .yn-n,.yes .yn-n{color:#16a34a;}
+.yn.no-on .yn-n,.no .yn-n{color:#6366f1;}
 .yn-d{font-size:11px;color:#aaa;margin-top:4px;line-height:1.4;}
+
+/* 입력 */
 .f{margin-bottom:14px;}
 .lb{font-size:12px;font-weight:600;color:#555;margin-bottom:6px;}
 input[type=number],input[type=text]{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:14px;outline:none;}
@@ -54,70 +77,94 @@ input::placeholder{color:#bbb;}
 select{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:13px;outline:none;cursor:pointer;}
 select:focus{border-color:#e55a1c;}
 .hint{font-size:11px;color:#e55a1c;font-weight:600;min-height:16px;margin-top:5px;}
-.iu{position:relative;} .iu input{padding-right:56px;}
+.iu{position:relative;}
+.iu input{padding-right:56px;}
 .ub{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#bbb;pointer-events:none;}
 .mt{display:flex;gap:6px;margin-bottom:12px;}
 .mt-t{flex:1;padding:9px;border:1.5px solid #e0e0e0;border-radius:9px;background:#f8f8f8;font-size:12px;font-weight:600;color:#888;cursor:pointer;text-align:center;}
 .mt-t.on{border-color:#e55a1c;background:#fff3ee;color:#e55a1c;}
-.input-tabs{display:flex;gap:0;margin-bottom:16px;border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden;}
-.itab{flex:1;padding:11px 6px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;}
-.itab:not(:last-child){border-right:1.5px solid #e0e0e0;}
-.itab.on{background:#fff3ee;color:#e55a1c;}
+
+/* 탭 */
+.tabs{display:flex;margin-bottom:16px;border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden;}
+.tab{flex:1;padding:11px 6px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;}
+.tab:not(:last-child){border-right:1.5px solid #e0e0e0;}
+.tab.on{background:#fff3ee;color:#e55a1c;}
+
+/* 업로드 */
 .dzone{border:2px dashed #ddd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s;}
 .dzone:hover,.dzone.over{border-color:#e55a1c;background:#fff8f5;}
 .dz-ic{font-size:32px;margin-bottom:10px;}
-.dz-main{font-size:14px;color:#888;font-weight:500;} .dz-main span{color:#e55a1c;font-weight:700;}
+.dz-main{font-size:14px;color:#888;font-weight:500;}
+.dz-main span{color:#e55a1c;font-weight:700;}
 .dz-sub{font-size:11px;color:#bbb;margin-top:6px;line-height:1.6;}
 .fmts{display:flex;gap:6px;justify-content:center;margin-top:12px;}
 .fm{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
-.fm.csv{background:#dcfce7;color:#16a34a;} .fm.xlsx{background:#dbeafe;color:#2563eb;} .fm.xls{background:#fef9c3;color:#ca8a04;}
-/* 분석 완료 */
-.parse-result{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
-.parse-result.show{display:block;}
-.parse-result-title{font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;}
-.parse-items{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.parse-item{font-size:11px;padding:4px 10px;background:#fff;border:1px solid #86efac;border-radius:20px;color:#16a34a;}
-.parse-apply-btn{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
-.parse-apply-btn:hover{background:#16a34a;}
-.parse-err{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:14px;margin-top:12px;display:none;}
+.fm.csv{background:#dcfce7;color:#16a34a;}
+.fm.xlsx{background:#dbeafe;color:#2563eb;}
+.fm.xls{background:#fef9c3;color:#ca8a04;}
+
+/* 파싱 결과 */
+.parse-ok{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
+.parse-ok.show{display:block;}
+.parse-ok-t{font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;}
+.parse-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.parse-tag{font-size:11px;padding:4px 10px;background:#fff;border:1px solid #86efac;border-radius:20px;color:#16a34a;}
+.parse-btn{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.parse-btn:hover{background:#16a34a;}
+.parse-err{display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:14px;margin-top:12px;}
 .parse-err.show{display:block;}
-.parse-err-title{font-size:13px;font-weight:700;color:#dc2626;margin-bottom:6px;}
-.parse-err-msg{font-size:12px;color:#ef4444;margin-bottom:10px;line-height:1.5;}
+.parse-err-t{font-size:13px;font-weight:700;color:#dc2626;margin-bottom:6px;}
+.parse-err-m{font-size:12px;color:#ef4444;margin-bottom:10px;line-height:1.5;}
 .parse-retry{font-size:12px;color:#dc2626;cursor:pointer;text-decoration:underline;}
 
+/* 붙여넣기 */
 .paste-guide{background:#fffbe6;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;color:#78350f;line-height:1.7;}
 .paste-guide b{color:#92400e;}
 textarea{width:100%;height:130px;padding:12px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;font-size:12px;color:#111;outline:none;resize:vertical;font-family:monospace;line-height:1.7;}
 textarea:focus{border-color:#e55a1c;background:#fff;}
-.perr{font-size:11px;color:#ef4444;margin-top:6px;display:none;} .perr.on{display:block;}
-.form-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
-.form-table th{font-size:11px;font-weight:700;color:#888;padding:6px 4px;text-align:left;border-bottom:1.5px solid #f0f0f0;}
-.form-table td{padding:4px 3px;}
-.form-table input{padding:9px 8px;font-size:13px;}
-.row-del{background:#fee2e2;border:none;color:#ef4444;cursor:pointer;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;}
-.add-row-btn{width:100%;padding:10px;border:1.5px dashed #e0e0e0;border-radius:10px;background:none;color:#aaa;font-size:12px;cursor:pointer;margin-bottom:14px;font-weight:600;}
-.add-row-btn:hover{border-color:#e55a1c;color:#e55a1c;}
+.perr{font-size:11px;color:#ef4444;margin-top:6px;display:none;}
+.perr.on{display:block;}
+
+/* 폼 */
+.ftable{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.ftable th{font-size:11px;font-weight:700;color:#888;padding:6px 4px;text-align:left;border-bottom:1.5px solid #f0f0f0;}
+.ftable td{padding:4px 3px;}
+.ftable input{padding:9px 8px;font-size:13px;}
+.rdel{background:#fee2e2;border:none;color:#ef4444;cursor:pointer;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;}
+.addrow{width:100%;padding:10px;border:1.5px dashed #e0e0e0;border-radius:10px;background:none;color:#aaa;font-size:12px;cursor:pointer;margin-bottom:14px;font-weight:600;}
+.addrow:hover{border-color:#e55a1c;color:#e55a1c;}
 .apply-btn{width:100%;padding:13px;background:#111;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
 .apply-btn:hover{background:#333;}
+
+/* 저장됨 */
 .saved{display:none;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;margin-bottom:14px;font-size:12px;color:#16a34a;font-weight:600;}
 .saved.on{display:flex;}
-.chg-link{margin-left:auto;font-size:11px;color:#16a34a;cursor:pointer;text-decoration:underline;}
+.chg{margin-left:auto;font-size:11px;color:#16a34a;cursor:pointer;text-decoration:underline;}
+
+/* AI 질문 */
 .ai-box{background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:16px;margin-bottom:14px;}
 .ai-ttl{font-size:13px;font-weight:700;color:#2563eb;margin-bottom:10px;}
-.ai-ex{font-size:11px;color:#93c5fd;padding:2px 0;} .ai-exs{margin-bottom:12px;}
+.ai-ex{font-size:11px;color:#93c5fd;padding:2px 0;}
+.ai-exs{margin-bottom:12px;}
 .ai-row{display:flex;gap:8px;}
 .ai-in{flex:1;padding:12px 14px;background:#fff;border:1.5px solid #bfdbfe;border-radius:10px;color:#111;font-size:14px;outline:none;}
-.ai-in:focus{border-color:#3b82f6;} .ai-in::placeholder{color:#93c5fd;}
+.ai-in:focus{border-color:#3b82f6;}
+.ai-in::placeholder{color:#93c5fd;}
 .ai-go{padding:12px 18px;background:#3b82f6;border:none;border-radius:10px;color:#fff;font-size:13px;cursor:pointer;font-weight:700;}
-.ai-go:hover{background:#2563eb;} .ai-go:disabled{opacity:.4;cursor:not-allowed;}
-.typing{display:none;gap:5px;align-items:center;padding:10px 0;} .typing.on{display:flex;}
+.ai-go:hover{background:#2563eb;}
+.ai-go:disabled{opacity:.4;cursor:not-allowed;}
+.typing{display:none;gap:5px;align-items:center;padding:10px 0;}
+.typing.on{display:flex;}
 .dot{width:6px;height:6px;background:#3b82f6;border-radius:50%;animation:bx .9s infinite;}
-.dot:nth-child(2){animation-delay:.15s;} .dot:nth-child(3){animation-delay:.3s;}
+.dot:nth-child(2){animation-delay:.15s;}
+.dot:nth-child(3){animation-delay:.3s;}
 @keyframes bx{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 .ai-ans{margin-top:12px;font-size:13px;color:#1e3a5f;line-height:1.7;display:none;white-space:pre-wrap;background:#dbeafe;border-radius:10px;padding:12px;}
 .ai-ans.on{display:block;}
 .divider{height:1px;background:#f0f0f0;margin:16px 0;}
 .or{font-size:11px;color:#bbb;font-weight:600;margin-bottom:12px;}
+
+/* 벽면 */
 .wbox{background:#f8f8f8;border-radius:12px;padding:16px;margin-bottom:10px;position:relative;border:1.5px solid #ebebeb;}
 .wtag{font-size:11px;color:#e55a1c;font-weight:700;margin-bottom:12px;}
 .del-btn{position:absolute;top:12px;right:12px;background:#fee2e2;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:5px 9px;border-radius:7px;font-weight:600;}
@@ -127,6 +174,8 @@ textarea:focus{border-color:#e55a1c;background:#fff;}
 .go-btn:hover{background:#cc4f18;}
 .back-m{width:100%;padding:11px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;font-weight:600;display:none;}
 @media(max-width:600px){.back-m{display:block;}}
+
+/* 결과 */
 .result{background:#fff;border-radius:16px;padding:20px;margin-top:6px;display:none;box-shadow:0 2px 12px rgba(0,0,0,.08);}
 .result.on{display:block;}
 .rhead{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
@@ -144,142 +193,189 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .rsec:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
 .rsec-t{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
 .rrow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;}
-.rkey{font-size:13px;color:#888;} .rval{font-size:22px;font-weight:700;color:#111;}
-.rval.or{color:#e55a1c;} .rval.sm{font-size:15px;}
+.rkey{font-size:13px;color:#888;}
+.rval{font-size:22px;font-weight:700;color:#111;}
+.rval.or{color:#e55a1c;}
+.rval.sm{font-size:15px;}
 .dbox{background:#f8f8f8;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #efefef;}
 .dtag{font-size:11px;color:#e55a1c;font-weight:700;margin-bottom:8px;}
 .dr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
-.dk{color:#aaa;} .dv{color:#666;} .dv.or{color:#e55a1c;font-weight:600;}
+.dk{color:#aaa;}
+.dv{color:#666;}
+.dv.or{color:#e55a1c;font-weight:600;}
 .restart{width:100%;padding:12px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;margin-top:12px;font-weight:600;}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* 푸터 */
 .footer{background:#111;color:#fff;padding:32px 20px 40px;}
-.footer-logo-wrap{margin-bottom:6px;}
-.footer-logo-img{height:38px;object-fit:contain;filter:brightness(0) invert(1);}
-.footer-logo-fallback{font-family:'Dancing Script',cursive;font-size:32px;font-weight:700;color:#fff;}
-.footer-logo-fallback span{color:#e55a1c;}
-.footer-tagline{font-size:12px;color:#888;margin-bottom:4px;}
-.footer-tagline2{font-size:12px;color:#666;margin-bottom:20px;font-style:italic;}
-.footer-products-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
-.product-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
-.product-tag{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;text-decoration:none;}
-.product-tag:hover{border-color:#e55a1c;color:#e55a1c;}
-.footer-info{border-top:1px solid #222;padding-top:18px;}
-.fi-row{display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
-.footer-cta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px;}
+.f-logo{font-family:'Dancing Script',cursive;font-size:30px;font-weight:700;color:#fff;margin-bottom:4px;}
+.f-logo span{color:#e55a1c;}
+.f-tag{font-size:12px;color:#888;margin-bottom:3px;}
+.f-tag2{font-size:12px;color:#666;font-style:italic;margin-bottom:20px;}
+.f-prod-t{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.f-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
+.f-tag-item{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;text-decoration:none;}
+.f-tag-item:hover{border-color:#e55a1c;color:#e55a1c;}
+.f-info{border-top:1px solid #222;padding-top:18px;}
+.f-row{display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
+.f-cta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px;}
 .fcta{padding:12px 8px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;}
-.fcta.kakao{background:#FEE500;color:#111;}
-.fcta.sample{background:#222;color:#aaa;border:1px solid #333;}
-.fcta.sample:hover{background:#2a2a2a;color:#fff;}
-.fcta.insta{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
-.footer-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
+.fcta.kk{background:#FEE500;color:#111;}
+.fcta.sp{background:#222;color:#aaa;border:1px solid #333;}
+.fcta.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
+.f-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
 </style>
 </head>
 <body>
 <div class="wrap" id="root">
-  <header class="site-header">
-    <div class="header-left">
-      <a class="logo-main" href="https://stonekim.kr" target="_blank">STONE<span>KIM</span></a>
-      
-    </div>
 
+  <header class="hdr">
+    <div class="hdr-left">
+      <a class="logo-a" href="https://stonekim.kr" target="_blank">STONE<span>KIM</span></a>
+      <span class="logo-sep">|</span>
+      <span class="logo-sub">인테리어 건축자재 수량 계산기</span>
+    </div>
   </header>
 
-  <div class="yt-wrap">
+  <div class="yt">
     <iframe src="https://www.youtube.com/embed/9B1MOtBjBuY?autoplay=1&mute=1&loop=1&playlist=9B1MOtBjBuY&rel=0&modestbranding=1&playsinline=1"
-      allowfullscreen allow="autoplay;encrypted-media;picture-in-picture" title="스톤킴 소개영상"></iframe>
-    <div class="yt-overlay">
-      <div class="yt-overlay-text">🔥 휘어지는 타일, 스톤킴 소프트스톤</div>
-      <div class="yt-overlay-sub">소리를 켜려면 영상을 클릭하세요</div>
+      allowfullscreen allow="autoplay;encrypted-media" title="스톤킴 소개영상"></iframe>
+    <div class="yt-ov">
+      <div class="yt-t">🔥 휘어지는 타일, 스톤킴 소프트스톤</div>
+      <div class="yt-s">소리를 켜려면 영상을 클릭하세요</div>
     </div>
   </div>
 
-  <a class="banner" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">
-    <div><div class="bt">🪨 스톤킴 제품 무료 견적받기</div><div class="bs">소프트스톤 · 콕스톤 · 아트브릭 · WPC패널 전 제품</div></div>
-    <div class="bcta">상담하기 →</div>
+  <a class="bnr" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">
+    <div>
+      <div class="bnr-t">🪨 스톤킴 제품 무료 견적받기</div>
+      <div class="bnr-s">소프트스톤 · 콕스톤 · 아트브릭 · WPC패널 전 제품</div>
+    </div>
+    <div class="bnr-btn">상담하기 →</div>
   </a>
 
-  <!-- 캐치카피 -->
-  <div style="background:#fff;padding:18px 20px;border-bottom:1px solid #f0f0f0;">
-    <div style="font-size:19px;font-weight:800;color:#111;line-height:1.5;">
-      인테리어 자재가<br><span style="color:#e55a1c;">공간에 얼마나 필요한지</span><br>10초 안에 계산해 보세요
+  <div class="catch">
+    <div class="catch-title">
+      인테리어 자재가<br>
+      <em>공간에 얼마나 필요한지</em><br>
+      10초 안에 계산해 보세요
     </div>
   </div>
 
   <div class="content">
+
+    <!-- 1단계 -->
     <div class="card" id="s1">
-      <div class="ch"><div class="num" id="n1">1</div><div><div class="ctitle">시공할 공간은 어디인가요?</div><div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div></div></div>
+      <div class="ch">
+        <div class="num" id="n1">1</div>
+        <div>
+          <div class="ctitle">시공할 공간은 어디인가요?</div>
+          <div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div>
+        </div>
+      </div>
       <div class="g2">
-        <div class="choice" id="cw" onclick="pickSpace('wall')"><div class="ci">🧱</div><div class="cn">벽</div></div>
-        <div class="choice" id="cf" onclick="pickSpace('floor')"><div class="ci">⬜</div><div class="cn">바닥</div></div>
+        <div class="choice" id="cw" onclick="pickSpace('wall')">
+          <div class="ci">🧱</div><div class="cn">벽</div>
+        </div>
+        <div class="choice" id="cf" onclick="pickSpace('floor')">
+          <div class="ci">⬜</div><div class="cn">바닥</div>
+        </div>
       </div>
     </div>
 
+    <!-- 2단계 -->
     <div class="card locked" id="s2">
-      <div class="ch"><div class="num locked" id="n2">2</div><div><div class="ctitle">단가표가 있으신가요?</div><div class="csub">한 번만 저장하면 이 기기에서 계속 사용 가능</div></div></div>
+      <div class="ch">
+        <div class="num locked" id="n2">2</div>
+        <div>
+          <div class="ctitle">단가표가 있으신가요?</div>
+          <div class="csub">한 번만 저장하면 이 기기에서 계속 사용 가능</div>
+        </div>
+      </div>
       <div class="g2">
-        <div class="yn-btn yes" id="yy" onclick="pickList(true)"><div class="yn-n">예</div><div class="yn-d">단가표 업로드 후<br>모델명으로 계산</div></div>
-        <div class="yn-btn no" id="yn" onclick="pickList(false)"><div class="yn-n">아니오</div><div class="yn-d">사이즈·단가<br>직접 입력</div></div>
+        <div class="yn yes" id="yy" onclick="pickList(true)">
+          <div class="yn-n">예</div>
+          <div class="yn-d">단가표 업로드 후<br>모델명으로 계산</div>
+        </div>
+        <div class="yn no" id="yn" onclick="pickList(false)">
+          <div class="yn-n">아니오</div>
+          <div class="yn-d">사이즈·단가<br>직접 입력</div>
+        </div>
       </div>
       <button class="back-m" style="margin-top:14px;" onclick="goBack(1)">← 이전으로</button>
     </div>
 
+    <!-- 3단계 A: 단가표 있음 -->
     <div class="card locked" id="s3a">
-      <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 업로드 & 수량 계산</div><div class="csub">파일을 올리면 자동으로 인식합니다</div></div></div>
-      <div class="saved" id="sv">✅ <span id="sv-nm"></span><span class="chg-link" onclick="reupload()">변경하기</span></div>
+      <div class="ch">
+        <div class="num locked" id="n3a">3</div>
+        <div>
+          <div class="ctitle">단가표 업로드 & 수량 계산</div>
+          <div class="csub">파일을 올리면 자동으로 인식합니다</div>
+        </div>
+      </div>
+
+      <div class="saved" id="sv">
+        ✅ <span id="sv-nm"></span>
+        <span class="chg" onclick="reupload()">변경하기</span>
+      </div>
+
       <div id="up-area">
-        <div class="input-tabs">
-          <button class="itab on" id="tab1" onclick="switchTab(1)">📂 파일 업로드</button>
-          <button class="itab" id="tab2" onclick="switchTab(2)">📋 구글시트 복사</button>
-          <button class="itab" id="tab3" onclick="switchTab(3)">✏️ 직접 입력</button>
+        <div class="tabs">
+          <button class="tab on" id="tab1" onclick="switchTab(1)">📂 파일 업로드</button>
+          <button class="tab" id="tab2" onclick="switchTab(2)">📋 구글시트 복사</button>
+          <button class="tab" id="tab3" onclick="switchTab(3)">✏️ 직접 입력</button>
         </div>
 
-        <!-- 파일 업로드 -->
-        <div id="method1">
-          <div class="dzone" id="dz" onclick="document.getElementById('fi').click()"
+        <div id="m1">
+          <div class="dzone" id="dz"
+            onclick="document.getElementById('fi').click()"
             ondragover="dov(event)" ondragleave="dol()" ondrop="ddr(event)">
             <div class="dz-ic">📂</div>
-            <div class="dz-main"><span>파일 선택 또는 여기에 끌어다 놓기</span></div>
-            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>열 순서나 형식이 달라도 자동으로 인식합니다</div>
-            <div class="fmts"><span class="fm csv">CSV</span><span class="fm xlsx">XLSX</span><span class="fm xls">XLS</span></div>
+            <div class="dz-main"><span>파일 선택 또는 끌어다 놓기</span></div>
+            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>열 순서가 달라도 자동으로 인식합니다</div>
+            <div class="fmts">
+              <span class="fm csv">CSV</span>
+              <span class="fm xlsx">XLSX</span>
+              <span class="fm xls">XLS</span>
+            </div>
           </div>
-          <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
-
-          <!-- 분석 완료 -->
-          <div class="parse-result" id="parse-result">
-            <div class="parse-result-title">✅ <span id="parse-count"></span>개 제품을 인식했습니다</div>
-            <div class="parse-items" id="parse-items"></div>
-            <button class="parse-apply-btn" onclick="applyParsed()">✓ 이 단가표로 계산하기</button>
+          <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="onFile(this)">
+          <div class="parse-ok" id="pok">
+            <div class="parse-ok-t">✅ <span id="pok-cnt"></span>개 제품을 인식했습니다</div>
+            <div class="parse-tags" id="pok-tags"></div>
+            <button class="parse-btn" onclick="applyParsed()">✓ 이 단가표로 계산하기</button>
           </div>
-
-          <!-- 오류 -->
-          <div class="parse-err" id="parse-err">
-            <div class="parse-err-title">⚠️ 인식에 실패했습니다</div>
-            <div class="parse-err-msg" id="parse-err-msg"></div>
-            <span class="parse-retry" onclick="retryUpload()">다른 파일 선택하기</span>
+          <div class="parse-err" id="perr-file">
+            <div class="parse-err-t">⚠️ 인식에 실패했습니다</div>
+            <div class="parse-err-m" id="perr-msg"></div>
+            <span class="parse-retry" onclick="retryFile()">다른 파일 선택하기</span>
           </div>
         </div>
 
-        <!-- 구글시트 붙여넣기 -->
-        <div id="method2" style="display:none;">
-          <div class="paste-guide"><b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>1. 모델명·사이즈·단가 포함된 열들 선택<br>2. <b>Ctrl+C</b> → 아래 칸에 <b>Ctrl+V</b><br>→ 사이즈가 "600*1200" 한 칸이어도 OK, 헤더 있어도 OK</div>
+        <div id="m2" style="display:none;">
+          <div class="paste-guide">
+            <b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>
+            1. 모델명·사이즈·단가 열 선택<br>
+            2. <b>Ctrl+C</b> → 아래 칸에 <b>Ctrl+V</b><br>
+            → "600*1200" 형식이어도 OK, 헤더 있어도 OK
+          </div>
           <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 붙여넣으세요"></textarea>
           <div class="perr" id="perr2"></div>
           <button class="apply-btn" onclick="applyPaste()">✓ 단가표 적용하기</button>
         </div>
 
-        <!-- 직접 입력 -->
-        <div id="method3" style="display:none;">
-          <table class="form-table">
+        <div id="m3" style="display:none;">
+          <table class="ftable">
             <thead><tr><th>모델명</th><th>가로(mm)</th><th>세로(mm)</th><th>단가(원)</th><th></th></tr></thead>
-            <tbody id="form-rows"></tbody>
+            <tbody id="frows"></tbody>
           </table>
-          <button class="add-row-btn" onclick="addFormRow()">+ 행 추가</button>
+          <button class="addrow" onclick="addRow()">+ 행 추가</button>
           <div class="perr" id="perr3"></div>
           <button class="apply-btn" onclick="applyForm()">✓ 단가표 적용하기</button>
         </div>
       </div>
 
-      <!-- 단가표 적용 후 -->
       <div id="ca" style="display:none;">
         <div class="ai-box">
           <div class="ai-ttl">✦ AI에게 바로 물어보세요</div>
@@ -297,7 +393,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </div>
         <div class="divider"></div>
         <div class="or">또는 직접 선택해서 계산</div>
-        <div class="f"><div class="lb">모델 선택</div><select id="ms" onchange="onMs()"><option value="">모델 선택...</option></select></div>
+        <div class="f">
+          <div class="lb">모델 선택</div>
+          <select id="ms" onchange="onMs()"><option value="">모델 선택...</option></select>
+        </div>
         <div id="aw"></div>
         <button class="add-w" onclick="addW('a')">+ 면적 추가</button>
         <button class="go-btn" onclick="doCalc('a')">계산하기</button>
@@ -305,18 +404,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="back-m" style="margin-top:10px;" onclick="goBack(2)">← 이전으로</button>
     </div>
 
+    <!-- 3단계 B: 직접 입력 -->
     <div class="card locked" id="s3b">
-      <div class="ch"><div class="num locked" id="n3b">3</div><div><div class="ctitle">자재 정보 입력 & 수량 계산</div><div class="csub">자재 사이즈와 단가를 직접 입력하세요</div></div></div>
-      <div class="f"><div class="lb">자재 가로 (mm)</div><div class="iu"><input type="number" id="bw" placeholder="600" oninput="bh2()"><span class="ub">mm</span></div></div>
-      <div class="f"><div class="lb">자재 세로 (mm)</div><div class="iu"><input type="number" id="bht" placeholder="1200" oninput="bh2()"><span class="ub">mm</span></div></div>
-      <div class="f"><div class="lb">단가 (원/장)</div><div class="iu"><input type="number" id="bp" placeholder="55000" oninput="bh2()"><span class="ub">원</span></div></div>
-      <div class="hint" id="bhn" style="margin-bottom:12px;"></div>
+      <div class="ch">
+        <div class="num locked" id="n3b">3</div>
+        <div>
+          <div class="ctitle">자재 정보 입력 & 수량 계산</div>
+          <div class="csub">자재 사이즈와 단가를 직접 입력하세요</div>
+        </div>
+      </div>
+      <div class="f"><div class="lb">자재 가로 (mm)</div><div class="iu"><input type="number" id="bw" placeholder="600" oninput="bHint()"><span class="ub">mm</span></div></div>
+      <div class="f"><div class="lb">자재 세로 (mm)</div><div class="iu"><input type="number" id="bh" placeholder="1200" oninput="bHint()"><span class="ub">mm</span></div></div>
+      <div class="f"><div class="lb">단가 (원/장)</div><div class="iu"><input type="number" id="bp" placeholder="55000" oninput="bHint()"><span class="ub">원</span></div></div>
+      <div class="hint" id="bhint" style="margin-bottom:12px;"></div>
       <div id="bwalls"></div>
       <button class="add-w" onclick="addW('b')">+ 면적 추가</button>
       <button class="go-btn" onclick="doCalc('b')">계산하기</button>
       <button class="back-m" onclick="goBack(2)">← 이전으로</button>
     </div>
 
+    <!-- 결과 -->
     <div class="result" id="rc">
       <div class="rhead"><div class="rbadge">✓</div><div class="rtitle">계산 결과</div></div>
       <div class="loss-box">
@@ -331,47 +438,46 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="ri"></div>
       <button class="restart" onclick="doRestart()">↺ 처음부터 다시</button>
     </div>
+
   </div>
 
   <footer class="footer">
-    <div class="footer-logo-wrap">
-      <img class="footer-logo-img" src="https://ecimg.cafe24img.com/pg1984b31415074059/stonekim/web/img/logo.svg" alt="스톤킴"
-        onerror="this.style.display='none';document.getElementById('flt').style.display='block'">
-      <div class="footer-logo-fallback" id="flt" style="display:none;">Stone<span>Kim</span></div>
+    <div class="f-logo">Stone<span>Kim</span></div>
+    <div class="f-tag">트렌디한 인테리어 자재는 스톤킴</div>
+    <div class="f-tag2">우리는 초효율 시공을 만듭니다</div>
+    <div class="f-prod-t">제품 라인업</div>
+    <div class="f-tags">
+      <a class="f-tag-item" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">소프트스톤</a>
+      <a class="f-tag-item" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">콕스톤</a>
+      <a class="f-tag-item" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">아트브릭</a>
+      <a class="f-tag-item" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">WPC 패널</a>
+      <a class="f-tag-item" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">메탈 패널</a>
+      <a class="f-tag-item" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">유리블럭</a>
+      <a class="f-tag-item" href="https://stonekim.kr/shopinfo/catalog.html" target="_blank">전체 카탈로그 →</a>
     </div>
-    <div class="footer-tagline">트렌디한 인테리어 자재는 스톤킴</div>
-    <div class="footer-tagline2">우리는 초효율 시공을 만듭니다</div>
-    <div class="footer-products-title">제품 라인업</div>
-    <div class="product-tags">
-      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">소프트스톤</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">콕스톤</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">아트브릭</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">WPC 패널</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">메탈 패널</a>
-      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">유리블럭</a>
-      <a class="product-tag" href="https://stonekim.kr/shopinfo/catalog.html" target="_blank">전체 카탈로그 →</a>
+    <div class="f-info">
+      <div class="f-row">📍 경기도 김포시 대곶면 대곶남로 307 2층 (스톤킴 쇼룸)</div>
+      <div class="f-row">📞 고객센터 : 1866-1338</div>
     </div>
-    <div class="footer-info">
-      <div class="fi-row">📍 경기도 김포시 대곶면 대곶남로 307 2층 (스톤킴 쇼룸)</div>
-      <div class="fi-row">📞 고객센터 : 1866-1338</div>
+    <div class="f-cta">
+      <a class="fcta kk" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">💬 카카오톡 상담</a>
+      <a class="fcta sp" href="https://stonekim.kr/shopinfo/samplebook.html" target="_blank">📦 샘플 신청</a>
+      <a class="fcta ig" href="https://www.instagram.com/stonekim.official/" target="_blank">📸 인스타그램</a>
     </div>
-    <div class="footer-cta">
-      <a class="fcta kakao" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">💬 카카오톡 상담</a>
-      <a class="fcta sample" href="https://stonekim.kr/shopinfo/samplebook.html" target="_blank">📦 샘플 신청</a>
-      <a class="fcta insta" href="https://www.instagram.com/stonekim.official/" target="_blank">📸 인스타그램</a>
-    </div>
-    <div class="footer-copy">© 2025 STONE KIM. All rights reserved.</div>
+    <div class="f-copy">© 2025 STONE KIM. All rights reserved.</div>
   </footer>
+
 </div>
-
 <script>
-var sp=null,prods=[],selProd=null,cache=null,parsedProds=null;
-var wc={a:0,b:0},wl={a:[],b:[]},wm={a:{},b:{}};
-var formRowCount=0;
+// ===== 상태 =====
+var sp=null, prods=[], selProd=null, cache=null, parsedProds=null;
+var wc={a:0,b:0}, wl={a:[],b:[]}, wm={a:{},b:{}};
+var rowCnt=0;
 
+// ===== 초기화 =====
 (function(){
   try{
-    var s=localStorage.getItem('sk_v6');
+    var s=localStorage.getItem('sk_v7');
     if(!s)return;
     var d=JSON.parse(s);
     if(!d||!d.prods||!d.prods.length)return;
@@ -379,193 +485,92 @@ var formRowCount=0;
     document.getElementById('sv').classList.add('on');
     document.getElementById('sv-nm').textContent=d.name+' ('+prods.length+'개)';
     document.getElementById('up-area').style.display='none';
-    buildSel();document.getElementById('ca').style.display='block';
+    buildSel();
+    document.getElementById('ca').style.display='block';
   }catch(e){}
-  addFormRow();
+  addRow();
 })();
 
-function save(n){try{localStorage.setItem('sk_v6',JSON.stringify({name:n,prods:prods}));}catch(e){}}
+function save(n){try{localStorage.setItem('sk_v7',JSON.stringify({name:n,prods:prods}));}catch(e){}}
+
 function buildSel(){
   var s=document.getElementById('ms');
   s.innerHTML='<option value="">모델 선택...</option>'+prods.map(function(p){
     return '<option value="'+p.model+'">'+p.model+' — '+p.w+'×'+p.h+'mm · '+Number(p.p).toLocaleString()+'원</option>';
   }).join('');
 }
+
 function applyProds(name){
   save(name);
   document.getElementById('sv').classList.add('on');
   document.getElementById('sv-nm').textContent=name+' ('+prods.length+'개)';
   document.getElementById('up-area').style.display='none';
-  buildSel();document.getElementById('ca').style.display='block';
+  buildSel();
+  document.getElementById('ca').style.display='block';
   setTimeout(function(){document.getElementById('ca').scrollIntoView({behavior:'smooth',block:'start'});},120);
 }
+
 function reupload(){
-  try{localStorage.removeItem('sk_v6');}catch(e){}
+  try{localStorage.removeItem('sk_v7');}catch(e){}
   prods=[];selProd=null;parsedProds=null;
   document.getElementById('sv').classList.remove('on');
   document.getElementById('up-area').style.display='block';
   document.getElementById('ca').style.display='none';
-  document.getElementById('parse-result').classList.remove('show');
-  document.getElementById('parse-err').classList.remove('show');
+  document.getElementById('pok').classList.remove('show');
+  document.getElementById('perr-file').classList.remove('show');
   document.getElementById('fi').value='';
 }
-function switchTab(t){[1,2,3].forEach(function(i){document.getElementById('tab'+i).classList.toggle('on',i===t);document.getElementById('method'+i).style.display=i===t?'block':'none';});}
-function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
-function dol(){document.getElementById('dz').classList.remove('over');}
-function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)processWithAI(f);}
-function hf(inp){var f=inp.files[0];if(f)processWithAI(f);}
 
-// ========== 스마트 파일 파싱 (규칙 기반) ==========
-function processWithAI(f){
-  document.getElementById('dz').style.display='none';
-  document.getElementById('parse-result').classList.remove('show');
-  document.getElementById('parse-err').classList.remove('show');
-
-  readFile(f).then(function(rows){
-    if(!rows||rows.length<2){showParseErr('파일에 데이터가 없습니다.',f);return;}
-    var products = smartParse(rows, f.name);
-    if(!products||!products.length){
-      showParseErr('제품 데이터를 인식하지 못했습니다.\n모델명·사이즈·단가가 포함된 파일인지 확인해주세요.',f);
-      return;
-    }
-    parsedProds = products;
-    showParseResult(products, f.name);
-  }).catch(function(err){
-    showParseErr(err.message||'파일 읽기 실패',f);
+// ===== 탭 =====
+function switchTab(t){
+  [1,2,3].forEach(function(i){
+    document.getElementById('tab'+i).classList.toggle('on',i===t);
+    document.getElementById('m'+i).style.display=i===t?'block':'none';
   });
 }
 
-function showParseErr(msg, f){
-  document.getElementById('dz').style.display='block';
-  document.getElementById('parse-err').classList.add('show');
-  document.getElementById('parse-err-msg').textContent=msg;
-}
-
-function retryUpload(){
-  document.getElementById('parse-err').classList.remove('show');
+// ===== 파일 업로드 =====
+function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
+function dol(){document.getElementById('dz').classList.remove('over');}
+function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)processFile(f);}
+function onFile(inp){var f=inp.files[0];if(f)processFile(f);}
+function retryFile(){
+  document.getElementById('perr-file').classList.remove('show');
   document.getElementById('fi').value='';
   document.getElementById('fi').click();
 }
 
-// 사이즈 파싱: "600*1200", "600 * 1200", "600x1200", "600×1200"
-function pSize(v){
-  var m=String(v||'').match(/(\d+)\s*[*×xX]\s*(\d+)/);
-  return m?{w:+m[1],h:+m[2]}:null;
-}
-// 숫자 정제
-function pNum(v){return parseFloat(String(v||'').replace(/[,₩원\s]/g,''));}
-
-// 열 타입 점수 계산
-function scoreCol(header, vals){
-  var h=String(header||'').toLowerCase();
-  var numVals=vals.map(pNum).filter(function(n){return !isNaN(n)&&n>0;});
-  var sizeVals=vals.filter(function(v){return pSize(v)!==null;});
-  var textVals=vals.filter(function(v){var n=pNum(v);return isNaN(n)&&String(v).trim().length>1;});
-  var avg=numVals.length?numVals.reduce(function(a,b){return a+b;})/numVals.length:0;
-
-  return {
-    isModel: (/(모델|타일|품명|제품|name|model|tile|item|코드|품목|이름)/i.test(h)?3:0) + (textVals.length>=2?2:0),
-    isSize:  (/(사이즈|size|규격|mm)/i.test(h)?3:0) + (sizeVals.length>=2?3:0),
-    isWidth: (/(가로|width|폭)/i.test(h)?3:0) + (numVals.length>=2&&avg>=100&&avg<=9999&&sizeVals.length===0?1:0),
-    isHeight:(/(세로|height|길이)/i.test(h)?3:0) + (numVals.length>=2&&avg>=100&&avg<=9999&&sizeVals.length===0?1:0),
-    isPrice: (/(단가|price|가격|금액|원|cost)/i.test(h)?3:0) + (avg>5000?2:0) + (avg>50000?1:0),
-    isId:    (/(번호|no\.?|num|순번|#)/i.test(h)?3:0) + (numVals.length>=2&&avg<100?2:0),
-    numVals:numVals, sizeVals:sizeVals, textVals:textVals, avg:avg
-  };
+function processFile(f){
+  document.getElementById('pok').classList.remove('show');
+  document.getElementById('perr-file').classList.remove('show');
+  readFile(f).then(function(rows){
+    var p=smartParse(rows);
+    if(!p||!p.length){
+      showFileErr('제품 데이터를 인식하지 못했습니다.\n모델명·사이즈·단가가 포함된 파일인지 확인해주세요.');
+      return;
+    }
+    parsedProds=p;
+    document.getElementById('pok-cnt').textContent=p.length;
+    var tags=document.getElementById('pok-tags');
+    tags.innerHTML=p.slice(0,5).map(function(x){
+      return '<span class="parse-tag">'+x.model+' '+x.w+'×'+x.h+'mm</span>';
+    }).join('')+(p.length>5?'<span class="parse-tag">+'+( p.length-5)+'개 더</span>':'');
+    document.getElementById('pok').classList.add('show');
+  }).catch(function(e){showFileErr(e.message||'파일 읽기 실패');});
 }
 
-function smartParse(rows, fname){
-  // 1. 실제 데이터 시작 행 찾기 (숫자>10 있는 첫 행)
-  var dataStart=0;
-  for(var i=0;i<Math.min(rows.length,8);i++){
-    if(rows[i].some(function(c){var n=pNum(c);return !isNaN(n)&&n>10;})){dataStart=i;break;}
-    if(i===7)dataStart=1;
-  }
-
-  // 2. 헤더 = 데이터 시작 전 행
-  var headers=dataStart>0?rows[dataStart-1]:rows[0].map(function(_,i){return '열'+(i+1);});
-  var dataRows=rows.slice(dataStart).filter(function(r){return r.some(function(c){return String(c).trim();});});
-  if(!dataRows.length)return [];
-
-  // 3. 각 열 분석
-  var ncols=Math.max.apply(null,dataRows.map(function(r){return r.length;}));
-  var scores=[];
-  for(var ci=0;ci<ncols;ci++){
-    var vals=dataRows.slice(0,8).map(function(r){return r[ci]||'';});
-    scores.push(scoreCol(headers[ci]||'', vals));
-  }
-
-  // 4. 역할 배정 (점수 기반)
-  var gM=-1,gW=-1,gH=-1,gP=-1,gS=-1;
-
-  // 사이즈 열 (W*H 한칸)
-  var sizeScores=scores.map(function(s,i){return{i:i,v:s.isSize};}).filter(function(x){return x.v>0;});
-  if(sizeScores.length)gS=sizeScores.sort(function(a,b){return b.v-a.v;})[0].i;
-
-  // 모델명 열
-  var modelScores=scores.map(function(s,i){return{i:i,v:s.isModel};}).filter(function(x){return x.v>0&&i!==gS;});
-  if(modelScores.length)gM=modelScores.sort(function(a,b){return b.v-a.v;})[0].i;
-
-  // 단가 열 (가장 큰 평균)
-  var priceScores=scores.map(function(s,i){return{i:i,v:s.isPrice,avg:s.avg};}).filter(function(x){return x.i!==gM&&x.i!==gS&&x.avg>0;});
-  if(priceScores.length)gP=priceScores.sort(function(a,b){return b.v-a.v||b.avg-a.avg;})[0].i;
-
-  if(gS<0){
-    // 가로/세로 별도 열
-    var dimCols=scores.map(function(s,i){return{i:i,wv:s.isWidth,hv:s.isHeight,avg:s.avg};})
-      .filter(function(x){return x.i!==gM&&x.i!==gP&&x.avg>=50&&x.avg<=9999;});
-    var wCols=dimCols.sort(function(a,b){return b.wv-a.wv;});
-    if(wCols.length>0)gW=wCols[0].i;
-    var hCols=dimCols.filter(function(x){return x.i!==gW;}).sort(function(a,b){return b.hv-a.hv;});
-    if(hCols.length>0)gH=hCols[0].i;
-  }
-
-  // 5. 모델명 못찾으면 텍스트 열 중 첫번째
-  if(gM<0){
-    for(var ci=0;ci<ncols;ci++){
-      if(ci===gS||ci===gW||ci===gH||ci===gP)continue;
-      if(scores[ci]&&scores[ci].textVals&&scores[ci].textVals.length>=2){gM=ci;break;}
-    }
-  }
-
-  // 6. 단가 못찾으면 숫자 중 가장 큰 평균값 열
-  if(gP<0){
-    var best={i:-1,avg:0};
-    for(var ci=0;ci<ncols;ci++){
-      if(ci===gM||ci===gS||ci===gW||ci===gH)continue;
-      if(scores[ci]&&scores[ci].avg>best.avg){best={i:ci,avg:scores[ci].avg};}
-    }
-    if(best.i>=0)gP=best.i;
-  }
-
-  // 7. 실제 데이터 파싱
-  var products=[];
-  var autoIdx=1;
-  dataRows.forEach(function(r){
-    var model=gM>=0?String(r[gM]||'').trim():'제품'+autoIdx;
-    if(!model)model='제품'+autoIdx;
-    var price=pNum(r[gP]);
-    var w,h;
-    if(gS>=0){
-      var sz=pSize(r[gS]);
-      if(sz){w=sz.w;h=sz.h;}
-      else{
-        var nums=String(r[gS]||'').match(/\d+/g);
-        if(nums&&nums.length>=2){w=+nums[0];h=+nums[1];}
-        else return;
-      }
-    }else{
-      w=pNum(r[gW]);h=pNum(r[gH]);
-    }
-    if(!isNaN(w)&&!isNaN(h)&&!isNaN(price)&&w>0&&h>0&&price>0){
-      products.push({model:model,w:w,h:h,p:price});
-      autoIdx++;
-    }
-  });
-  return products;
+function showFileErr(msg){
+  document.getElementById('perr-file').classList.add('show');
+  document.getElementById('perr-msg').textContent=msg;
 }
 
-async function readFile(f){
+function applyParsed(){
+  if(!parsedProds||!parsedProds.length)return;
+  prods=parsedProds;
+  applyProds('파일 ('+prods.length+'개)');
+}
+
+function readFile(f){
   return new Promise(function(resolve,reject){
     var n=f.name.toLowerCase();
     if(n.endsWith('.csv')){
@@ -582,10 +587,9 @@ async function readFile(f){
         try{
           var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
           var ws=wb.Sheets[wb.SheetNames[0]];
-          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(r){
-            return r.map(function(c){return String(c===null||c===undefined?'':c);});
-          });
-          resolve(rows);
+          resolve(XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(row){
+            return row.map(function(c){return c===null||c===undefined?'':String(c);});
+          }));
         }catch(err){reject(err);}
       };
       r.onerror=reject;
@@ -594,76 +598,199 @@ async function readFile(f){
   });
 }
 
-function showParseResult(products, fname){
-  document.getElementById('parse-result').classList.add('show');
-  document.getElementById('parse-count').textContent=products.length;
-  // 미리보기 (최대 5개)
-  var items=document.getElementById('parse-items');
-  items.innerHTML=products.slice(0,5).map(function(p){
-    return '<span class="parse-item">'+p.model+' '+p.w+'×'+p.h+'mm</span>';
-  }).join('')+(products.length>5?'<span class="parse-item">+'+(products.length-5)+'개 더</span>':'');
-  document.getElementById('parse-result').dataset.fname=fname;
+// ===== 스마트 파싱 =====
+function pNum(v){return parseFloat(String(v||'').replace(/[,₩원\s]/g,''));}
+function pSize(v){
+  var m=String(v||'').match(/(\d+)\s*[*×xX]\s*(\d+)/);
+  return m?{w:+m[1],h:+m[2]}:null;
 }
 
-function applyParsed(){
-  if(!parsedProds||!parsedProds.length)return;
-  prods=parsedProds;
-  applyProds(document.getElementById('parse-result').dataset.fname||'파일');
+function smartParse(rows){
+  // 데이터 시작 행 찾기
+  var ds=0;
+  for(var i=0;i<Math.min(rows.length,8);i++){
+    if(rows[i].some(function(c){var n=pNum(c);return !isNaN(n)&&n>10;})){ds=i;break;}
+    ds=i+1;
+  }
+  var headers=ds>0?rows[ds-1]:rows[0].map(function(_,i){return '열'+(i+1);});
+  var data=rows.slice(ds).filter(function(r){return r.some(function(c){return String(c).trim();});});
+  if(!data.length)return[];
+
+  var nc=Math.max.apply(null,data.map(function(r){return r.length;}));
+
+  // 각 열 분석
+  var cols=[];
+  for(var ci=0;ci<nc;ci++){
+    var hdr=String(headers[ci]||'').toLowerCase();
+    var vals=data.slice(0,8).map(function(r){return r[ci]||'';});
+    var nums=vals.map(pNum).filter(function(n){return !isNaN(n)&&n>0;});
+    var sizes=vals.filter(function(v){return pSize(v)!==null;});
+    var texts=vals.filter(function(v){var n=pNum(v);return isNaN(n)&&String(v).trim().length>1;});
+    var avg=nums.length?nums.reduce(function(a,b){return a+b;})/nums.length:0;
+    cols.push({
+      ci:ci, hdr:hdr, avg:avg,
+      modelScore:(/(모델|타일|품명|제품|name|model|tile|item|코드|품목|이름)/i.test(hdr)?3:0)+(texts.length>=2?2:0),
+      sizeScore: (/(사이즈|size|규격|mm)/i.test(hdr)?3:0)+(sizes.length>=2?3:0),
+      wScore:    (/(가로|width|폭)/i.test(hdr)?3:0),
+      hScore:    (/(세로|height|길이)/i.test(hdr)?3:0),
+      priceScore:(/(단가|price|가격|금액|원|cost)/i.test(hdr)?3:0)+(avg>5000?2:0),
+      hasSizes:sizes.length, hasTexts:texts.length, hasNums:nums.length
+    });
+  }
+
+  // 역할 배정
+  var gM=-1, gW=-1, gH=-1, gP=-1, gS=-1;
+
+  // 사이즈 열
+  var sCol=cols.filter(function(c){return c.sizeScore>0;}).sort(function(a,b){return b.sizeScore-a.sizeScore;});
+  if(sCol.length)gS=sCol[0].ci;
+
+  // 모델명 열
+  var mCol=cols.filter(function(c){return c.ci!==gS&&c.modelScore>0;}).sort(function(a,b){return b.modelScore-a.modelScore;});
+  if(mCol.length)gM=mCol[0].ci;
+
+  // 단가 열 (가장 큰 평균, 모델/사이즈 열 제외)
+  var pCol=cols.filter(function(c){return c.ci!==gM&&c.ci!==gS&&c.hasNums>0;}).sort(function(a,b){return b.priceScore-a.priceScore||b.avg-a.avg;});
+  if(pCol.length)gP=pCol[0].ci;
+
+  if(gS<0){
+    // 가로/세로 별도 열
+    var dimCols=cols.filter(function(c){return c.ci!==gM&&c.ci!==gP&&c.avg>=50&&c.avg<=9999;});
+    var wCol=dimCols.sort(function(a,b){return b.wScore-a.wScore;});
+    if(wCol.length)gW=wCol[0].ci;
+    var hCol=dimCols.filter(function(c){return c.ci!==gW;}).sort(function(a,b){return b.hScore-a.hScore;});
+    if(hCol.length)gH=hCol[0].ci;
+  }
+
+  // 모델명 못찾으면 텍스트 많은 열
+  if(gM<0){
+    var tCol=cols.filter(function(c){return c.ci!==gS&&c.ci!==gW&&c.ci!==gH&&c.ci!==gP&&c.hasTexts>=2;});
+    if(tCol.length)gM=tCol[0].ci;
+  }
+
+  // 파싱
+  var result=[];
+  var idx=1;
+  data.forEach(function(r){
+    var model=gM>=0?String(r[gM]||'').trim():'제품'+idx;
+    if(!model)model='제품'+idx;
+    var price=pNum(r[gP]);
+    var w,h;
+    if(gS>=0){
+      var sz=pSize(r[gS]);
+      if(sz){w=sz.w;h=sz.h;}
+      else{var ns=String(r[gS]||'').match(/\d+/g);if(ns&&ns.length>=2){w=+ns[0];h=+ns[1];}else return;}
+    }else{
+      w=pNum(r[gW]);h=pNum(r[gH]);
+    }
+    if(!isNaN(w)&&!isNaN(h)&&!isNaN(price)&&w>0&&h>0&&price>0){
+      result.push({model:model,w:w,h:h,p:price});idx++;
+    }
+  });
+  return result;
 }
 
-// 구글시트 붙여넣기 (규칙 기반)
+// ===== 구글시트 붙여넣기 =====
 function applyPaste(){
   var txt=(document.getElementById('pt').value||'').trim();
   var err=document.getElementById('perr2');err.classList.remove('on');
   if(!txt){err.textContent='내용을 붙여넣어 주세요.';err.classList.add('on');return;}
   var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
   var rows=lines.map(function(l){return l.split(/\t|,/).map(function(c){return c.trim().replace(/^"|"$/g,'');});});
-  var products=smartParse(rows,'붙여넣기');
-  if(!products||!products.length){err.textContent='인식된 데이터가 없습니다. 모델명·사이즈·단가가 포함됐는지 확인해주세요.';err.classList.add('on');return;}
-  prods=products;applyProds('붙여넣기 ('+products.length+'개)');
+  var p=smartParse(rows);
+  if(!p||!p.length){err.textContent='인식된 데이터가 없습니다. 모델명·사이즈·단가가 포함됐는지 확인해주세요.';err.classList.add('on');return;}
+  prods=p;applyProds('붙여넣기 ('+p.length+'개)');
 }
 
-function addFormRow(){
-  formRowCount++;var id=formRowCount;
-  var tbody=document.getElementById('form-rows');
+// ===== 직접 입력 폼 =====
+function addRow(){
+  rowCnt++;var id=rowCnt;
+  var tb=document.getElementById('frows');
   var tr=document.createElement('tr');tr.id='fr_'+id;
-  tr.innerHTML='<td><input type="text" id="fm_'+id+'" placeholder="A001"></td><td><input type="number" id="fw_'+id+'" placeholder="600"></td><td><input type="number" id="fh_'+id+'" placeholder="1200"></td><td><input type="number" id="fp_'+id+'" placeholder="55000"></td><td>'+(formRowCount>1?'<button class="row-del" onclick="delFormRow('+id+')">✕</button>':'')+'</td>';
-  tbody.appendChild(tr);
+  tr.innerHTML='<td><input type="text" id="fm_'+id+'" placeholder="A001"></td>'
+    +'<td><input type="number" id="fw_'+id+'" placeholder="600"></td>'
+    +'<td><input type="number" id="fh_'+id+'" placeholder="1200"></td>'
+    +'<td><input type="number" id="fp_'+id+'" placeholder="55000"></td>'
+    +'<td>'+(rowCnt>1?'<button class="rdel" onclick="delRow('+id+')">✕</button>':'')+'</td>';
+  tb.appendChild(tr);
 }
-function delFormRow(id){var el=document.getElementById('fr_'+id);if(el)el.remove();}
+function delRow(id){var el=document.getElementById('fr_'+id);if(el)el.remove();}
 function applyForm(){
   var err=document.getElementById('perr3');err.classList.remove('on');
-  var p2=[];
-  document.getElementById('form-rows').querySelectorAll('tr').forEach(function(tr){
+  var p=[];
+  document.getElementById('frows').querySelectorAll('tr').forEach(function(tr){
     var id=tr.id.replace('fr_','');
     var m=(document.getElementById('fm_'+id).value||'').trim();
     var w=parseFloat(document.getElementById('fw_'+id).value)||0;
     var h=parseFloat(document.getElementById('fh_'+id).value)||0;
-    var p=parseFloat(document.getElementById('fp_'+id).value)||0;
-    if(m&&w>0&&h>0&&p>0)p2.push({model:m,w:w,h:h,p:p});
+    var pp=parseFloat(document.getElementById('fp_'+id).value)||0;
+    if(m&&w>0&&h>0&&pp>0)p.push({model:m,w:w,h:h,p:pp});
   });
-  if(!p2.length){err.textContent='입력된 행이 없습니다.';err.classList.add('on');return;}
-  prods=p2;applyProds('직접입력 ('+p2.length+'개)');
+  if(!p.length){err.textContent='입력된 행이 없습니다.';err.classList.add('on');return;}
+  prods=p;applyProds('직접입력 ('+p.length+'개)');
 }
+
 function onMs(){var v=document.getElementById('ms').value;selProd=prods.find(function(p){return p.model===v;})||null;}
-function unlock(id,nid){document.getElementById(id).classList.remove('locked');var n=document.getElementById(nid);n.classList.remove('locked');n.style.background='#e55a1c';n.style.color='#fff';}
-function markDone(nid){var n=document.getElementById(nid);n.className='num done';n.textContent='✓';}
+
+// ===== 스텝 제어 =====
+function unlock(id,nid){
+  document.getElementById(id).classList.remove('locked');
+  var n=document.getElementById(nid);
+  n.classList.remove('locked');
+  n.style.background='#e55a1c';
+  n.style.color='#fff';
+}
+function markDone(nid){
+  var n=document.getElementById(nid);
+  n.className='num done';
+  n.textContent='✓';
+}
 function scrollTo(id){setTimeout(function(){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});},80);}
-function pickSpace(s){sp=s;document.getElementById('cw').classList.toggle('on',s==='wall');document.getElementById('cf').classList.toggle('on',s==='floor');markDone('n1');unlock('s2','n2');scrollTo('s2');}
+
+function pickSpace(s){
+  sp=s;
+  document.getElementById('cw').classList.toggle('on',s==='wall');
+  document.getElementById('cf').classList.toggle('on',s==='floor');
+  markDone('n1');
+  unlock('s2','n2');
+  scrollTo('s2');
+}
+
 function pickList(v){
-  document.getElementById('yy').classList.toggle('yes-on',v===true);document.getElementById('yn').classList.toggle('no-on',v===false);
-  markDone('n2');document.getElementById('s3a').classList.add('locked');document.getElementById('s3b').classList.add('locked');document.getElementById('rc').classList.remove('on');
+  document.getElementById('yy').classList.toggle('yes-on',v===true);
+  document.getElementById('yn').classList.toggle('no-on',v===false);
+  markDone('n2');
+  document.getElementById('s3a').classList.add('locked');
+  document.getElementById('s3b').classList.add('locked');
+  document.getElementById('rc').classList.remove('on');
   if(v){unlock('s3a','n3a');scrollTo('s3a');if(!wl.a.length)addW('a');}
   else{unlock('s3b','n3b');scrollTo('s3b');if(!wl.b.length)addW('b');}
 }
+
 function goBack(step){
-  if(step===1){['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});document.getElementById('rc').classList.remove('on');document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');var n=document.getElementById('n1');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='1';scrollTo('s1');}
-  else{['s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});document.getElementById('rc').classList.remove('on');document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');var n=document.getElementById('n2');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='2';scrollTo('s2');}
+  if(step===1){
+    ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
+    document.getElementById('rc').classList.remove('on');
+    document.getElementById('cw').classList.remove('on');
+    document.getElementById('cf').classList.remove('on');
+    var n=document.getElementById('n1');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='1';
+    scrollTo('s1');
+  }else{
+    ['s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
+    document.getElementById('rc').classList.remove('on');
+    document.getElementById('yy').classList.remove('yes-on');
+    document.getElementById('yn').classList.remove('no-on');
+    var n=document.getElementById('n2');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='2';
+    scrollTo('s2');
+  }
 }
+
+// ===== AI 질문 =====
 async function aiAsk(){
   var q=(document.getElementById('aiq').value||'').trim();if(!q)return;
   var btn=document.getElementById('aig');btn.disabled=true;
-  document.getElementById('ait').classList.add('on');document.getElementById('aia').classList.remove('on');
+  document.getElementById('ait').classList.add('on');
+  document.getElementById('aia').classList.remove('on');
   var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
   try{
     var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -672,58 +799,137 @@ async function aiAsk(){
         messages:[{role:'user',content:q}]})});
     var d=await res.json();
     document.getElementById('ait').classList.remove('on');
-    var a=document.getElementById('aia');a.textContent=(d.content&&d.content[0]&&d.content[0].text)||'다시 시도해주세요.';a.classList.add('on');
-  }catch(e){document.getElementById('ait').classList.remove('on');document.getElementById('aia').textContent='잠시 후 다시 시도해주세요.';document.getElementById('aia').classList.add('on');}
+    var a=document.getElementById('aia');
+    a.textContent=(d.content&&d.content[0]&&d.content[0].text)||'다시 시도해주세요.';
+    a.classList.add('on');
+  }catch(e){
+    document.getElementById('ait').classList.remove('on');
+    document.getElementById('aia').textContent='잠시 후 다시 시도해주세요.';
+    document.getElementById('aia').classList.add('on');
+  }
   btn.disabled=false;
 }
+
+// ===== 벽면 추가 =====
 function addW(m){
   wc[m]++;var id=wc[m];wl[m].push(id);wm[m][id]='hebe';
   var lbl=sp==='floor'?'바닥':'벽면';
   var wrap=document.getElementById(m==='a'?'aw':'bwalls');
   var div=document.createElement('div');div.className='wbox';div.id='wb_'+m+'_'+id;
-  div.innerHTML='<div class="wtag">'+lbl+'-'+id+'</div>'+(wl[m].length>1?'<button class="del-btn" onclick="rmW(\''+m+'\','+id+')">✕ 삭제</button>':'')
-    +'<div class="mt"><div class="mt-t on" id="mth_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'hebe\')">헤베로 입력</div><div class="mt-t" id="mts_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'size\')">가로×세로로 입력</div></div>'
-    +'<div id="ih_'+m+'_'+id+'"><div class="lb">면적 (헤베)</div><div class="iu"><input type="number" id="wa_'+m+'_'+id+'" placeholder="예: 13.5" step="0.01"><span class="ub">헤베</span></div></div>'
-    +'<div id="is_'+m+'_'+id+'" style="display:none"><div class="r2"><div><div class="lb">가로 (mm)</div><input type="number" id="ww_'+m+'_'+id+'" placeholder="3000"></div><div><div class="lb">세로 (mm)</div><input type="number" id="wh_'+m+'_'+id+'" placeholder="2800"></div></div></div>';
+  div.innerHTML='<div class="wtag">'+lbl+'-'+id+'</div>'
+    +(wl[m].length>1?'<button class="del-btn" onclick="rmW(\''+m+'\','+id+')">✕ 삭제</button>':'')
+    +'<div class="mt">'
+    +'<div class="mt-t on" id="mth_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'hebe\')">헤베로 입력</div>'
+    +'<div class="mt-t" id="mts_'+m+'_'+id+'" onclick="swM(\''+m+'\','+id+',\'size\')">가로×세로로 입력</div>'
+    +'</div>'
+    +'<div id="ih_'+m+'_'+id+'"><div class="lb">면적 (헤베)</div>'
+    +'<div class="iu"><input type="number" id="wa_'+m+'_'+id+'" placeholder="예: 13.5" step="0.01"><span class="ub">헤베</span></div></div>'
+    +'<div id="is_'+m+'_'+id+'" style="display:none"><div class="r2">'
+    +'<div><div class="lb">가로 (mm)</div><input type="number" id="ww_'+m+'_'+id+'" placeholder="3000"></div>'
+    +'<div><div class="lb">세로 (mm)</div><input type="number" id="wh_'+m+'_'+id+'" placeholder="2800"></div>'
+    +'</div></div>';
   wrap.appendChild(div);
 }
-function swM(m,id,mode){wm[m][id]=mode;document.getElementById('mth_'+m+'_'+id).classList.toggle('on',mode==='hebe');document.getElementById('mts_'+m+'_'+id).classList.toggle('on',mode==='size');document.getElementById('ih_'+m+'_'+id).style.display=mode==='hebe'?'block':'none';document.getElementById('is_'+m+'_'+id).style.display=mode==='size'?'block':'none';}
+function swM(m,id,mode){
+  wm[m][id]=mode;
+  document.getElementById('mth_'+m+'_'+id).classList.toggle('on',mode==='hebe');
+  document.getElementById('mts_'+m+'_'+id).classList.toggle('on',mode==='size');
+  document.getElementById('ih_'+m+'_'+id).style.display=mode==='hebe'?'block':'none';
+  document.getElementById('is_'+m+'_'+id).style.display=mode==='size'?'block':'none';
+}
 function rmW(m,id){wl[m]=wl[m].filter(function(w){return w!==id;});var el=document.getElementById('wb_'+m+'_'+id);if(el)el.remove();}
-function getArea(m,id){if(wm[m][id]==='hebe')return parseFloat(document.getElementById('wa_'+m+'_'+id).value)||0;var ww=parseFloat(document.getElementById('ww_'+m+'_'+id).value)||0,wh=parseFloat(document.getElementById('wh_'+m+'_'+id).value)||0;return(ww>0&&wh>0)?(ww/1000)*(wh/1000):0;}
-function bh2(){var w=parseFloat(document.getElementById('bw').value)||0,h=parseFloat(document.getElementById('bht').value)||0,p=parseFloat(document.getElementById('bp').value)||0;if(w>0&&h>0){var a=(w/1000)*(h/1000);document.getElementById('bhn').textContent='1헤베 = '+(1/a).toFixed(1)+'장'+(p>0?' · 헤베당 '+Math.round(p/a).toLocaleString()+'원':'');}}
-function syncL(from){var v;if(from==='s'){v=parseFloat(document.getElementById('ls').value)||0;document.getElementById('ln').value=v;}else{v=parseFloat(document.getElementById('ln').value)||0;if(v>100)v=100;document.getElementById('ls').value=Math.min(v,30);document.getElementById('ln').value=v;}document.getElementById('lh').textContent='로스율 '+v+'% 적용 중';if(cache)renderResult(cache,v);}
+function getArea(m,id){
+  if(wm[m][id]==='hebe')return parseFloat(document.getElementById('wa_'+m+'_'+id).value)||0;
+  var ww=parseFloat(document.getElementById('ww_'+m+'_'+id).value)||0;
+  var wh=parseFloat(document.getElementById('wh_'+m+'_'+id).value)||0;
+  return(ww>0&&wh>0)?(ww/1000)*(wh/1000):0;
+}
+function bHint(){
+  var w=parseFloat(document.getElementById('bw').value)||0;
+  var h=parseFloat(document.getElementById('bh').value)||0;
+  var p=parseFloat(document.getElementById('bp').value)||0;
+  if(w>0&&h>0){var a=(w/1000)*(h/1000);document.getElementById('bhint').textContent='1헤베 = '+(1/a).toFixed(1)+'장'+(p>0?' · 헤베당 '+Math.round(p/a).toLocaleString()+'원':'');}
+}
+
+// ===== 로스율 =====
+function syncL(from){
+  var v;
+  if(from==='s'){v=parseFloat(document.getElementById('ls').value)||0;document.getElementById('ln').value=v;}
+  else{v=parseFloat(document.getElementById('ln').value)||0;if(v>100)v=100;document.getElementById('ls').value=Math.min(v,30);document.getElementById('ln').value=v;}
+  document.getElementById('lh').textContent='로스율 '+v+'% 적용 중';
+  if(cache)renderResult(cache,v);
+}
 function getLoss(){return parseFloat(document.getElementById('ln').value)||0;}
+
+// ===== 계산 =====
 function doCalc(m){
   var tw,th,tp;
-  if(m==='a'){if(!selProd){alert('모델을 선택해주세요.');return;}tw=+selProd.w;th=+selProd.h;tp=+selProd.p;}
-  else{tw=parseFloat(document.getElementById('bw').value)||0;th=parseFloat(document.getElementById('bht').value)||0;tp=parseFloat(document.getElementById('bp').value)||0;if(!tw||!th||!tp){alert('자재 가로, 세로, 단가를 모두 입력해주세요.');return;}}
+  if(m==='a'){
+    if(!selProd){alert('모델을 선택해주세요.');return;}
+    tw=+selProd.w;th=+selProd.h;tp=+selProd.p;
+  }else{
+    tw=parseFloat(document.getElementById('bw').value)||0;
+    th=parseFloat(document.getElementById('bh').value)||0;
+    tp=parseFloat(document.getElementById('bp').value)||0;
+    if(!tw||!th||!tp){alert('자재 가로, 세로, 단가를 모두 입력해주세요.');return;}
+  }
   var ta=(tw/1000)*(th/1000);
   if(!wl[m]||!wl[m].length){alert('면적을 입력해주세요.');return;}
   var details=[];
-  for(var i=0;i<wl[m].length;i++){var id=wl[m][i];var aM=getArea(m,id);if(!aM){alert('모든 면적을 입력해주세요.');return;}details.push({id:id,aM:aM,qty:Math.ceil(aM/ta),tp:tp});}
-  cache={details:details};markDone(m==='a'?'n3a':'n3b');
-  var rc=document.getElementById('rc');rc.classList.add('on');renderResult(cache,getLoss());
+  for(var i=0;i<wl[m].length;i++){
+    var id=wl[m][i];
+    var aM=getArea(m,id);
+    if(!aM){alert('모든 면적을 입력해주세요.');return;}
+    details.push({id:id,aM:aM,qty:Math.ceil(aM/ta),tp:tp});
+  }
+  cache={details:details};
+  markDone(m==='a'?'n3a':'n3b');
+  var rc=document.getElementById('rc');
+  rc.classList.add('on');
+  renderResult(cache,getLoss());
   setTimeout(function(){rc.scrollIntoView({behavior:'smooth',block:'start'});},150);
 }
+
 function renderResult(c,lr){
   var mult=1+lr/100,tp=c.details[0].tp,rows='',tQ=0,tQL=0,tP=0,tPL=0;
-  for(var i=0;i<c.details.length;i++){var d=c.details[i];var qL=Math.ceil(d.qty*mult),price=d.qty*tp,priceL=Math.ceil(d.qty*mult)*tp;tQ+=d.qty;tQL+=qL;tP+=price;tPL+=priceL;
-    rows+='<div class="dbox"><div class="dtag">면적-'+d.id+' · '+d.aM+'헤베 ('+(d.aM/3.3058).toFixed(1)+'평)</div><div class="dr"><span class="dk">수량</span><span class="dv">'+d.qty+'장</span></div><div class="dr"><span class="dk">+로스('+lr+'%)</span><span class="dv or">'+qL+'장</span></div><div class="dr"><span class="dk">금액</span><span class="dv">'+price.toLocaleString()+'원</span></div><div class="dr"><span class="dk">+로스 포함</span><span class="dv or">'+priceL.toLocaleString()+'원</span></div></div>';}
-  document.getElementById('ri').innerHTML='<div class="rsec"><div class="rsec-t">총 금액</div><div class="rrow"><span class="rkey">기본 금액</span><span class="rval sm">'+tP.toLocaleString()+'원</span></div><div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tPL.toLocaleString()+'원</span></div></div><div class="rsec"><div class="rsec-t">총 수량</div><div class="rrow"><span class="rkey">기본 수량</span><span class="rval sm">'+tQ+'장</span></div><div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tQL+'장</span></div></div><div class="rsec">'+rows+'</div>';
+  for(var i=0;i<c.details.length;i++){
+    var d=c.details[i];
+    var qL=Math.ceil(d.qty*mult),price=d.qty*tp,priceL=Math.ceil(d.qty*mult)*tp;
+    tQ+=d.qty;tQL+=qL;tP+=price;tPL+=priceL;
+    rows+='<div class="dbox"><div class="dtag">면적-'+d.id+' · '+d.aM+'헤베 ('+(d.aM/3.3058).toFixed(1)+'평)</div>'
+      +'<div class="dr"><span class="dk">수량</span><span class="dv">'+d.qty+'장</span></div>'
+      +'<div class="dr"><span class="dk">+로스('+lr+'%)</span><span class="dv or">'+qL+'장</span></div>'
+      +'<div class="dr"><span class="dk">금액</span><span class="dv">'+price.toLocaleString()+'원</span></div>'
+      +'<div class="dr"><span class="dk">+로스 포함</span><span class="dv or">'+priceL.toLocaleString()+'원</span></div></div>';
+  }
+  document.getElementById('ri').innerHTML=
+    '<div class="rsec"><div class="rsec-t">총 금액</div>'
+    +'<div class="rrow"><span class="rkey">기본 금액</span><span class="rval sm">'+tP.toLocaleString()+'원</span></div>'
+    +'<div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tPL.toLocaleString()+'원</span></div></div>'
+    +'<div class="rsec"><div class="rsec-t">총 수량</div>'
+    +'<div class="rrow"><span class="rkey">기본 수량</span><span class="rval sm">'+tQ+'장</span></div>'
+    +'<div class="rrow"><span class="rkey">+로스('+lr+'%) 포함</span><span class="rval or">'+tQL+'장</span></div></div>'
+    +'<div class="rsec">'+rows+'</div>';
 }
+
+// ===== 처음부터 =====
 function doRestart(){
-  sp=null;selProd=null;cache=null;parsedProds=null;wc={a:0,b:0};wl={a:[],b:[]};wm={a:{},b:{}};
-  document.getElementById('aw').innerHTML='';document.getElementById('bwalls').innerHTML='';
-  ['bw','bht','bp'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('bhn').textContent='';document.getElementById('aiq').value='';document.getElementById('aia').classList.remove('on');
-  document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');
-  document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');
+  sp=null;selProd=null;cache=null;parsedProds=null;
+  wc={a:0,b:0};wl={a:[],b:[]};wm={a:{},b:{}};
+  document.getElementById('aw').innerHTML='';
+  document.getElementById('bwalls').innerHTML='';
+  ['bw','bh','bp'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('bhint').textContent='';
+  document.getElementById('aiq').value='';
+  document.getElementById('aia').classList.remove('on');
+  document.getElementById('cw').classList.remove('on');
+  document.getElementById('cf').classList.remove('on');
+  document.getElementById('yy').classList.remove('yes-on');
+  document.getElementById('yn').classList.remove('no-on');
   ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
   document.getElementById('rc').classList.remove('on');
-  document.getElementById('dz').style.display='block';
-  document.getElementById('parse-result').classList.remove('show');
-  document.getElementById('parse-err').classList.remove('show');
-  document.getElementById('ls').value=10;document.getElementById('ln').value=10;
+  document.getElementById('ls').value=10;
+  document.getElementById('ln').value=10;
   document.getElementById('lh').textContent='기본 10% · 조절하거나 직접 입력하세요';
   window.scrollTo({top:0,behavior:'smooth'});
 }
