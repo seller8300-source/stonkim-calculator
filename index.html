@@ -13,10 +13,10 @@ html{scroll-behavior:smooth;}
 body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;min-height:100vh;}
 .wrap{max-width:520px;margin:0 auto;}
 .site-header{background:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.header-left{display:flex;align-items:center;}
+.header-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .logo-main{font-size:15px;font-weight:800;color:#111;letter-spacing:-.02em;text-decoration:none;}
 .logo-main span{color:#e55a1c;}
-.logo-sub{font-size:10px;color:#999;font-weight:500;}
+.logo-sep{font-size:12px;color:#ddd;}.logo-sub{font-size:11px;color:#999;font-weight:500;}
 .header-nav a{font-size:12px;font-weight:600;color:#888;text-decoration:none;padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;}
 .header-nav a:hover{color:#e55a1c;border-color:#e55a1c;}
 .yt-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;}
@@ -71,13 +71,6 @@ select:focus{border-color:#e55a1c;}
 .fmts{display:flex;gap:6px;justify-content:center;margin-top:12px;}
 .fm{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
 .fm.csv{background:#dcfce7;color:#16a34a;} .fm.xlsx{background:#dbeafe;color:#2563eb;} .fm.xls{background:#fef9c3;color:#ca8a04;}
-/* AI 분석 로딩 */
-.ai-parsing{display:none;background:#f0f7ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:20px;margin-top:12px;text-align:center;}
-.ai-parsing.show{display:block;}
-.ai-parsing-icon{font-size:28px;margin-bottom:10px;animation:spin 2s linear infinite;display:inline-block;}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.ai-parsing-text{font-size:14px;font-weight:600;color:#2563eb;margin-bottom:4px;}
-.ai-parsing-sub{font-size:12px;color:#93c5fd;}
 /* 분석 완료 */
 .parse-result{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
 .parse-result.show{display:block;}
@@ -205,6 +198,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="bcta">상담하기 →</div>
   </a>
 
+  <!-- 캐치카피 -->
+  <div style="background:#fff;padding:18px 20px;border-bottom:1px solid #f0f0f0;">
+    <div style="font-size:19px;font-weight:800;color:#111;line-height:1.5;">
+      인테리어 자재가<br><span style="color:#e55a1c;">공간에 얼마나 필요한지</span><br>10초 안에 계산해 보세요
+    </div>
+  </div>
+
   <div class="content">
     <div class="card" id="s1">
       <div class="ch"><div class="num" id="n1">1</div><div><div class="ctitle">시공할 공간은 어디인가요?</div><div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div></div></div>
@@ -244,13 +244,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
 
-          <!-- AI 분석 중 -->
-          <div class="ai-parsing" id="ai-parsing">
-            <div class="ai-parsing-icon">🤖</div>
-            <div class="ai-parsing-text">AI가 파일을 분석하고 있어요...</div>
-            <div class="ai-parsing-sub">모델명·사이즈·단가 열을 자동으로 찾는 중</div>
-          </div>
-
           <!-- 분석 완료 -->
           <div class="parse-result" id="parse-result">
             <div class="parse-result-title">✅ <span id="parse-count"></span>개 제품을 인식했습니다</div>
@@ -262,7 +255,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div class="parse-err" id="parse-err">
             <div class="parse-err-title">⚠️ 인식에 실패했습니다</div>
             <div class="parse-err-msg" id="parse-err-msg"></div>
-            <span class="parse-retry" onclick="document.getElementById('fi').click()">다른 파일 선택하기</span>
+            <span class="parse-retry" onclick="retryUpload()">다른 파일 선택하기</span>
           </div>
         </div>
 
@@ -412,7 +405,6 @@ function reupload(){
   document.getElementById('sv').classList.remove('on');
   document.getElementById('up-area').style.display='block';
   document.getElementById('ca').style.display='none';
-  document.getElementById('ai-parsing').classList.remove('show');
   document.getElementById('parse-result').classList.remove('show');
   document.getElementById('parse-err').classList.remove('show');
   document.getElementById('fi').value='';
@@ -423,67 +415,154 @@ function dol(){document.getElementById('dz').classList.remove('over');}
 function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)processWithAI(f);}
 function hf(inp){var f=inp.files[0];if(f)processWithAI(f);}
 
-// ========== AI 파일 분석 ==========
-async function processWithAI(f){
-  // UI 초기화
+// ========== 스마트 파일 파싱 (규칙 기반) ==========
+function processWithAI(f){
   document.getElementById('dz').style.display='none';
-  document.getElementById('ai-parsing').classList.add('show');
   document.getElementById('parse-result').classList.remove('show');
   document.getElementById('parse-err').classList.remove('show');
 
-  try{
-    // 파일 읽기
-    var rows = await readFile(f);
-    if(!rows||rows.length<2){throw new Error('파일에 데이터가 없습니다.');}
-
-    // 상위 20행만 AI에게 전달 (토큰 절약)
-    var preview = rows.slice(0, 20).map(function(r){return r.join('\t');}).join('\n');
-
-    var prompt = '다음은 인테리어 자재 단가표 파일의 내용입니다.\n\n'+preview+'\n\n'
-      +'이 데이터에서 각 제품의 정보를 추출해주세요.\n'
-      +'반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요:\n'
-      +'{"products":[{"model":"모델명","w":가로mm숫자,"h":세로mm숫자,"p":단가원숫자}]}\n\n'
-      +'규칙:\n'
-      +'- 사이즈가 "600 * 1200" 또는 "600x1200" 형식이면 w=600, h=1200으로 분리\n'
-      +'- 단가는 숫자만 (원, 쉼표 제거)\n'
-      +'- 헤더행, 제목행, 합계행은 제외\n'
-      +'- 모델명이 없으면 "제품1", "제품2" 등으로 자동 생성\n'
-      +'- 모든 행의 모든 제품을 추출 (최대 100개)\n'
-      +'- w와 h는 반드시 mm 단위 숫자 (예: 600, 1200)\n'
-      +'- p는 장당 단가 (면적 단가가 아닌 장당 단가)';
-
-    var res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:4000,
-        system:'인테리어 자재 단가표 데이터 추출 전문가. 반드시 순수 JSON만 응답.',
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-
-    var data = await res.json();
-    var text = (data.content&&data.content[0]&&data.content[0].text)||'';
-
-    // JSON 파싱
-    var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if(!jsonMatch)throw new Error('AI가 데이터를 인식하지 못했습니다.');
-    var parsed = JSON.parse(jsonMatch[0]);
-    var products = parsed.products||[];
-    products = products.filter(function(p){return p.model&&p.w>0&&p.h>0&&p.p>0;});
-
-    if(!products.length)throw new Error('유효한 제품 데이터를 찾지 못했습니다.\n파일에 모델명·사이즈·단가가 포함되어 있는지 확인해주세요.');
-
+  readFile(f).then(function(rows){
+    if(!rows||rows.length<2){showParseErr('파일에 데이터가 없습니다.',f);return;}
+    var products = smartParse(rows, f.name);
+    if(!products||!products.length){
+      showParseErr('제품 데이터를 인식하지 못했습니다.\n모델명·사이즈·단가가 포함된 파일인지 확인해주세요.',f);
+      return;
+    }
     parsedProds = products;
     showParseResult(products, f.name);
+  }).catch(function(err){
+    showParseErr(err.message||'파일 읽기 실패',f);
+  });
+}
 
-  }catch(err){
-    document.getElementById('ai-parsing').classList.remove('show');
-    document.getElementById('dz').style.display='block';
-    document.getElementById('parse-err').classList.add('show');
-    document.getElementById('parse-err-msg').textContent = err.message||'알 수 없는 오류가 발생했습니다.';
+function showParseErr(msg, f){
+  document.getElementById('dz').style.display='block';
+  document.getElementById('parse-err').classList.add('show');
+  document.getElementById('parse-err-msg').textContent=msg;
+}
+
+function retryUpload(){
+  document.getElementById('parse-err').classList.remove('show');
+  document.getElementById('fi').value='';
+  document.getElementById('fi').click();
+}
+
+// 사이즈 파싱: "600*1200", "600 * 1200", "600x1200", "600×1200"
+function pSize(v){
+  var m=String(v||'').match(/(\d+)\s*[*×xX]\s*(\d+)/);
+  return m?{w:+m[1],h:+m[2]}:null;
+}
+// 숫자 정제
+function pNum(v){return parseFloat(String(v||'').replace(/[,₩원\s]/g,''));}
+
+// 열 타입 점수 계산
+function scoreCol(header, vals){
+  var h=String(header||'').toLowerCase();
+  var numVals=vals.map(pNum).filter(function(n){return !isNaN(n)&&n>0;});
+  var sizeVals=vals.filter(function(v){return pSize(v)!==null;});
+  var textVals=vals.filter(function(v){var n=pNum(v);return isNaN(n)&&String(v).trim().length>1;});
+  var avg=numVals.length?numVals.reduce(function(a,b){return a+b;})/numVals.length:0;
+
+  return {
+    isModel: (/(모델|타일|품명|제품|name|model|tile|item|코드|품목|이름)/i.test(h)?3:0) + (textVals.length>=2?2:0),
+    isSize:  (/(사이즈|size|규격|mm)/i.test(h)?3:0) + (sizeVals.length>=2?3:0),
+    isWidth: (/(가로|width|폭)/i.test(h)?3:0) + (numVals.length>=2&&avg>=100&&avg<=9999&&sizeVals.length===0?1:0),
+    isHeight:(/(세로|height|길이)/i.test(h)?3:0) + (numVals.length>=2&&avg>=100&&avg<=9999&&sizeVals.length===0?1:0),
+    isPrice: (/(단가|price|가격|금액|원|cost)/i.test(h)?3:0) + (avg>5000?2:0) + (avg>50000?1:0),
+    isId:    (/(번호|no\.?|num|순번|#)/i.test(h)?3:0) + (numVals.length>=2&&avg<100?2:0),
+    numVals:numVals, sizeVals:sizeVals, textVals:textVals, avg:avg
+  };
+}
+
+function smartParse(rows, fname){
+  // 1. 실제 데이터 시작 행 찾기 (숫자>10 있는 첫 행)
+  var dataStart=0;
+  for(var i=0;i<Math.min(rows.length,8);i++){
+    if(rows[i].some(function(c){var n=pNum(c);return !isNaN(n)&&n>10;})){dataStart=i;break;}
+    if(i===7)dataStart=1;
   }
+
+  // 2. 헤더 = 데이터 시작 전 행
+  var headers=dataStart>0?rows[dataStart-1]:rows[0].map(function(_,i){return '열'+(i+1);});
+  var dataRows=rows.slice(dataStart).filter(function(r){return r.some(function(c){return String(c).trim();});});
+  if(!dataRows.length)return [];
+
+  // 3. 각 열 분석
+  var ncols=Math.max.apply(null,dataRows.map(function(r){return r.length;}));
+  var scores=[];
+  for(var ci=0;ci<ncols;ci++){
+    var vals=dataRows.slice(0,8).map(function(r){return r[ci]||'';});
+    scores.push(scoreCol(headers[ci]||'', vals));
+  }
+
+  // 4. 역할 배정 (점수 기반)
+  var gM=-1,gW=-1,gH=-1,gP=-1,gS=-1;
+
+  // 사이즈 열 (W*H 한칸)
+  var sizeScores=scores.map(function(s,i){return{i:i,v:s.isSize};}).filter(function(x){return x.v>0;});
+  if(sizeScores.length)gS=sizeScores.sort(function(a,b){return b.v-a.v;})[0].i;
+
+  // 모델명 열
+  var modelScores=scores.map(function(s,i){return{i:i,v:s.isModel};}).filter(function(x){return x.v>0&&i!==gS;});
+  if(modelScores.length)gM=modelScores.sort(function(a,b){return b.v-a.v;})[0].i;
+
+  // 단가 열 (가장 큰 평균)
+  var priceScores=scores.map(function(s,i){return{i:i,v:s.isPrice,avg:s.avg};}).filter(function(x){return x.i!==gM&&x.i!==gS&&x.avg>0;});
+  if(priceScores.length)gP=priceScores.sort(function(a,b){return b.v-a.v||b.avg-a.avg;})[0].i;
+
+  if(gS<0){
+    // 가로/세로 별도 열
+    var dimCols=scores.map(function(s,i){return{i:i,wv:s.isWidth,hv:s.isHeight,avg:s.avg};})
+      .filter(function(x){return x.i!==gM&&x.i!==gP&&x.avg>=50&&x.avg<=9999;});
+    var wCols=dimCols.sort(function(a,b){return b.wv-a.wv;});
+    if(wCols.length>0)gW=wCols[0].i;
+    var hCols=dimCols.filter(function(x){return x.i!==gW;}).sort(function(a,b){return b.hv-a.hv;});
+    if(hCols.length>0)gH=hCols[0].i;
+  }
+
+  // 5. 모델명 못찾으면 텍스트 열 중 첫번째
+  if(gM<0){
+    for(var ci=0;ci<ncols;ci++){
+      if(ci===gS||ci===gW||ci===gH||ci===gP)continue;
+      if(scores[ci]&&scores[ci].textVals&&scores[ci].textVals.length>=2){gM=ci;break;}
+    }
+  }
+
+  // 6. 단가 못찾으면 숫자 중 가장 큰 평균값 열
+  if(gP<0){
+    var best={i:-1,avg:0};
+    for(var ci=0;ci<ncols;ci++){
+      if(ci===gM||ci===gS||ci===gW||ci===gH)continue;
+      if(scores[ci]&&scores[ci].avg>best.avg){best={i:ci,avg:scores[ci].avg};}
+    }
+    if(best.i>=0)gP=best.i;
+  }
+
+  // 7. 실제 데이터 파싱
+  var products=[];
+  var autoIdx=1;
+  dataRows.forEach(function(r){
+    var model=gM>=0?String(r[gM]||'').trim():'제품'+autoIdx;
+    if(!model)model='제품'+autoIdx;
+    var price=pNum(r[gP]);
+    var w,h;
+    if(gS>=0){
+      var sz=pSize(r[gS]);
+      if(sz){w=sz.w;h=sz.h;}
+      else{
+        var nums=String(r[gS]||'').match(/\d+/g);
+        if(nums&&nums.length>=2){w=+nums[0];h=+nums[1];}
+        else return;
+      }
+    }else{
+      w=pNum(r[gW]);h=pNum(r[gH]);
+    }
+    if(!isNaN(w)&&!isNaN(h)&&!isNaN(price)&&w>0&&h>0&&price>0){
+      products.push({model:model,w:w,h:h,p:price});
+      autoIdx++;
+    }
+  });
+  return products;
 }
 
 async function readFile(f){
@@ -533,36 +612,16 @@ function applyParsed(){
   applyProds(document.getElementById('parse-result').dataset.fname||'파일');
 }
 
-// 구글시트 붙여넣기도 AI 처리
-async function applyPaste(){
+// 구글시트 붙여넣기 (규칙 기반)
+function applyPaste(){
   var txt=(document.getElementById('pt').value||'').trim();
   var err=document.getElementById('perr2');err.classList.remove('on');
   if(!txt){err.textContent='내용을 붙여넣어 주세요.';err.classList.add('on');return;}
-
-  var btn=document.querySelector('#method2 .apply-btn');
-  btn.textContent='AI가 분석 중...';btn.disabled=true;
-
-  try{
-    var prompt='다음 텍스트는 인테리어 자재 단가표입니다.\n\n'+txt.slice(0,3000)+'\n\n'
-      +'각 제품 정보를 추출해서 JSON으로만 응답:\n'
-      +'{"products":[{"model":"모델명","w":가로mm,"h":세로mm,"p":단가}]}\n'
-      +'사이즈 "600*1200"이면 w=600,h=1200으로 분리. 헤더/제목행 제외.';
-
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:'JSON만 응답.',messages:[{role:'user',content:prompt}]})});
-    var data=await res.json();
-    var text=(data.content&&data.content[0]&&data.content[0].text)||'';
-    var jsonMatch=text.match(/\{[\s\S]*\}/);
-    if(!jsonMatch)throw new Error('인식 실패');
-    var parsed=JSON.parse(jsonMatch[0]);
-    var products=(parsed.products||[]).filter(function(p){return p.model&&p.w>0&&p.h>0&&p.p>0;});
-    if(!products.length)throw new Error('유효한 데이터 없음');
-    prods=products;
-    applyProds('붙여넣기 ('+products.length+'개)');
-  }catch(e){
-    err.textContent='인식에 실패했습니다. 다시 시도해주세요.';err.classList.add('on');
-  }
-  btn.textContent='✓ 단가표 적용하기';btn.disabled=false;
+  var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
+  var rows=lines.map(function(l){return l.split(/\t|,/).map(function(c){return c.trim().replace(/^"|"$/g,'');});});
+  var products=smartParse(rows,'붙여넣기');
+  if(!products||!products.length){err.textContent='인식된 데이터가 없습니다. 모델명·사이즈·단가가 포함됐는지 확인해주세요.';err.classList.add('on');return;}
+  prods=products;applyProds('붙여넣기 ('+products.length+'개)');
 }
 
 function addFormRow(){
@@ -663,7 +722,6 @@ function doRestart(){
   ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
   document.getElementById('rc').classList.remove('on');
   document.getElementById('dz').style.display='block';
-  document.getElementById('ai-parsing').classList.remove('show');
   document.getElementById('parse-result').classList.remove('show');
   document.getElementById('parse-err').classList.remove('show');
   document.getElementById('ls').value=10;document.getElementById('ln').value=10;
