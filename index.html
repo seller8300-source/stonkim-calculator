@@ -525,7 +525,7 @@ function showParseResult(products, fname){
   var items=document.getElementById('parse-items');
   items.innerHTML=products.slice(0,5).map(function(p){
     return '<span class="parse-item">'+p.model+' '+p.w+'×'+p.h+'mm</span>';
-  }).join('')+(products.length>5?'<span class="parse-item">+'+（products.length-5)+'개 더</span>':'');
+  }).join('')+(products.length>5?'<span class="parse-item">+'+(products.length-5)+'개 더</span>':'');
   document.getElementById('parse-result').dataset.fname=fname;
 }
 
