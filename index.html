@@ -224,7 +224,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div class="card locked" id="s3a">
-      <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 업로드 & 수량 계산</div><div class="csub">AI가 파일을 읽고 자동으로 인식합니다</div></div></div>
+      <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 업로드 & 수량 계산</div><div class="csub">파일을 올리면 자동으로 인식합니다</div></div></div>
       <div class="saved" id="sv">✅ <span id="sv-nm"></span><span class="chg-link" onclick="reupload()">변경하기</span></div>
       <div id="up-area">
         <div class="input-tabs">
@@ -239,7 +239,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             ondragover="dov(event)" ondragleave="dol()" ondrop="ddr(event)">
             <div class="dz-ic">📂</div>
             <div class="dz-main"><span>파일 선택 또는 여기에 끌어다 놓기</span></div>
-            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>AI가 모델명·사이즈·단가를 자동으로 찾아냅니다</div>
+            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>열 순서나 형식이 달라도 자동으로 인식합니다</div>
             <div class="fmts"><span class="fm csv">CSV</span><span class="fm xlsx">XLSX</span><span class="fm xls">XLS</span></div>
           </div>
           <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
@@ -595,7 +595,6 @@ async function readFile(f){
 }
 
 function showParseResult(products, fname){
-  document.getElementById('ai-parsing').classList.remove('show');
   document.getElementById('parse-result').classList.add('show');
   document.getElementById('parse-count').textContent=products.length;
   // 미리보기 (최대 5개)
