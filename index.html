@@ -224,6 +224,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .fcta.sp{background:#222;color:#aaa;border:1px solid #333;}
 .fcta.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
 .f-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
+/* 파싱 검토 테이블 */
+.review-box{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
+.review-box.show{display:block;}
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.review-title{font-size:13px;font-weight:700;color:#16a34a;}
+.review-edit-btn{font-size:11px;color:#16a34a;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;}
+.review-warn{background:#fffbe6;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#78350f;line-height:1.6;}
+.review-warn b{color:#92400e;}
+.review-dim-input{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.review-dim-input input{width:90px;padding:8px 10px;background:#fff;border:1.5px solid #fde68a;border-radius:8px;font-size:13px;color:#111;outline:none;}
+.review-dim-input input:focus{border-color:#f97316;}
+.review-dim-label{font-size:12px;color:#78350f;font-weight:600;}
+.review-table-wrap{max-height:220px;overflow-y:auto;margin-bottom:12px;border-radius:8px;border:1px solid #bbf7d0;}
+.review-table{width:100%;border-collapse:collapse;font-size:12px;}
+.review-table th{background:#f0fdf4;color:#16a34a;font-weight:700;padding:7px 8px;text-align:left;position:sticky;top:0;border-bottom:1px solid #bbf7d0;}
+.review-table td{padding:6px 8px;border-bottom:1px solid #f0f0f0;color:#444;}
+.review-table tr:last-child td{border-bottom:none;}
+.review-table td input{width:100%;padding:4px 6px;background:#fff;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#111;outline:none;}
+.review-table td input:focus{border-color:#e55a1c;}
+.review-apply{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.review-apply:hover{background:#16a34a;}
 </style>
 </head>
 <body>
@@ -341,10 +362,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             </div>
           </div>
           <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="onFile(this)">
-          <div class="parse-ok" id="pok">
-            <div class="parse-ok-t">✅ <span id="pok-cnt"></span>개 제품을 인식했습니다</div>
-            <div class="parse-tags" id="pok-tags"></div>
-            <button class="parse-btn" onclick="applyParsed()">✓ 이 단가표로 계산하기</button>
+          <div class="review-box" id="review-box">
+            <div class="review-header">
+              <div class="review-title">✅ <span id="rv-cnt"></span>개 제품 인식 완료</div>
+              <button class="review-edit-btn" onclick="toggleEdit()">✎ 수정하기</button>
+            </div>
+            <!-- 치수 하나만 있을 때 경고 -->
+            <div class="review-warn" id="rv-warn" style="display:none;">
+              <b>⚠️ 사이즈가 하나만 있어요</b><br>
+              파일에 치수가 한 개만 있습니다. 나머지 치수를 입력해주세요.<br>
+              <div class="review-dim-input">
+                <span class="review-dim-label">가로 (mm)</span>
+                <input type="number" id="rv-w" placeholder="예: 600" oninput="updateDims()">
+                <span class="review-dim-label">세로 (mm)</span>
+                <input type="number" id="rv-h" placeholder="예: 1200" oninput="updateDims()">
+              </div>
+            </div>
+            <div class="review-table-wrap">
+              <table class="review-table" id="rv-table">
+                <thead><tr><th>#</th><th>모델명</th><th>가로(mm)</th><th>세로(mm)</th><th>단가(원)</th></tr></thead>
+                <tbody id="rv-tbody"></tbody>
+              </table>
+            </div>
+            <button class="review-apply" onclick="applyParsed()">✓ 이 단가표로 계산하기</button>
           </div>
           <div class="parse-err" id="perr-file">
             <div class="parse-err-t">⚠️ 인식에 실패했습니다</div>
@@ -516,7 +556,7 @@ function reupload(){
   document.getElementById('sv').classList.remove('on');
   document.getElementById('up-area').style.display='block';
   document.getElementById('ca').style.display='none';
-  document.getElementById('pok').classList.remove('show');
+  document.getElementById('review-box').classList.remove('show');
   document.getElementById('perr-file').classList.remove('show');
   document.getElementById('fi').value='';
 }
@@ -541,7 +581,7 @@ function retryFile(){
 }
 
 function processFile(f){
-  document.getElementById('pok').classList.remove('show');
+  document.getElementById('review-box').classList.remove('show');
   document.getElementById('perr-file').classList.remove('show');
   readFile(f).then(function(rows){
     var p=smartParse(rows);
@@ -549,13 +589,7 @@ function processFile(f){
       showFileErr('제품 데이터를 인식하지 못했습니다.\n모델명·사이즈·단가가 포함된 파일인지 확인해주세요.');
       return;
     }
-    parsedProds=p;
-    document.getElementById('pok-cnt').textContent=p.length;
-    var tags=document.getElementById('pok-tags');
-    tags.innerHTML=p.slice(0,5).map(function(x){
-      return '<span class="parse-tag">'+x.model+' '+x.w+'×'+x.h+'mm</span>';
-    }).join('')+(p.length>5?'<span class="parse-tag">+'+( p.length-5)+'개 더</span>':'');
-    document.getElementById('pok').classList.add('show');
+    showReview(p, f.name);
   }).catch(function(e){showFileErr(e.message||'파일 읽기 실패');});
 }
 
@@ -564,9 +598,79 @@ function showFileErr(msg){
   document.getElementById('perr-msg').textContent=msg;
 }
 
+var editMode=false;
+var singleDimMode=false;
+
+function showReview(p, fname){
+  parsedProds=p;
+  document.getElementById('rv-cnt').textContent=p.length;
+
+  // 치수가 W=H 인 경우(하나만 있었던 경우) 경고 표시
+  var hasSingleDim=p.some(function(x){return x._singleDim;});
+  singleDimMode=hasSingleDim;
+  document.getElementById('rv-warn').style.display=hasSingleDim?'block':'none';
+
+  renderReviewTable(p);
+  document.getElementById('review-box').classList.add('show');
+  editMode=false;
+}
+
+function renderReviewTable(p){
+  var tbody=document.getElementById('rv-tbody');
+  tbody.innerHTML=p.map(function(x,i){
+    if(editMode){
+      return '<tr>'
+        +'<td>'+(i+1)+'</td>'
+        +'<td><input type="text" value="'+x.model+'" oninput="parsedProds['+i+'].model=this.value"></td>'
+        +'<td><input type="number" value="'+x.w+'" oninput="parsedProds['+i+'].w=+this.value"></td>'
+        +'<td><input type="number" value="'+x.h+'" oninput="parsedProds['+i+'].h=+this.value"></td>'
+        +'<td><input type="number" value="'+x.p+'" oninput="parsedProds['+i+'].p=+this.value"></td>'
+        +'</tr>';
+    }else{
+      var warnStyle=x._singleDim?'color:#f97316;font-weight:600;':'';
+      return '<tr>'
+        +'<td>'+(i+1)+'</td>'
+        +'<td>'+x.model+'</td>'
+        +'<td style="'+warnStyle+'">'+x.w+'</td>'
+        +'<td style="'+warnStyle+'">'+x.h+'</td>'
+        +'<td>'+Number(x.p).toLocaleString()+'</td>'
+        +'</tr>';
+    }
+  }).join('');
+}
+
+function toggleEdit(){
+  editMode=!editMode;
+  document.querySelector('.review-edit-btn').textContent=editMode?'✓ 완료':'✎ 수정하기';
+  renderReviewTable(parsedProds);
+}
+
+function updateDims(){
+  var w=parseFloat(document.getElementById('rv-w').value)||0;
+  var h=parseFloat(document.getElementById('rv-h').value)||0;
+  if(!parsedProds)return;
+  parsedProds.forEach(function(p){
+    if(p._singleDim){
+      if(w>0)p.w=w;
+      if(h>0)p.h=h;
+    }
+  });
+  if(!editMode)renderReviewTable(parsedProds);
+}
+
 function applyParsed(){
   if(!parsedProds||!parsedProds.length)return;
-  prods=parsedProds;
+  // 치수 미입력 경고
+  if(singleDimMode){
+    var w=parseFloat(document.getElementById('rv-w').value)||0;
+    var h=parseFloat(document.getElementById('rv-h').value)||0;
+    if(w<=0||h<=0){
+      alert('가로와 세로 치수를 모두 입력해주세요.');
+      return;
+    }
+  }
+  prods=parsedProds.filter(function(p){return p.model&&p.w>0&&p.h>0&&p.p>0;});
+  if(!prods.length){alert('유효한 제품이 없습니다.');return;}
   applyProds('파일 ('+prods.length+'개)');
 }
 
@@ -726,15 +830,18 @@ function smartParse(rows){
       else{
         var ns=String(r[gS]||'').match(/\d+/g);
         if(ns&&ns.length>=2){w=+ns[0];h=+ns[1];}
-        else if(ns&&ns.length===1){w=+ns[0];h=+ns[0];} // 하나만 있으면 정사각형
+        else if(ns&&ns.length===1){w=+ns[0];h=+ns[0];gSingleDim=true;}
         else return;
       }
     }else{
       w=pNum(r[gW]);
-      h=(gH===gW)?w:pNum(r[gH]); // 같은 열이면 w=h
+      var singleDim=(gH===gW||gH<0);
+      h=singleDim?w:pNum(r[gH]);
     }
     if(!isNaN(w)&&!isNaN(h)&&w>0&&h>0&&!isNaN(price)&&price>0){
-      result.push({model:model,w:w,h:h,p:price});idx++;
+      var item={model:model,w:w,h:h,p:price};
+      if(singleDim)item._singleDim=true;
+      result.push(item);idx++;
     }
   });
   return result;
@@ -978,6 +1085,7 @@ function doRestart(){
   document.getElementById('yn').classList.remove('no-on');
   ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
   document.getElementById('rc').classList.remove('on');
+  document.getElementById('review-box').classList.remove('show');
   document.getElementById('ls').value=10;
   document.getElementById('ln').value=10;
   document.getElementById('lh').textContent='기본 10% · 조절하거나 직접 입력하세요';
