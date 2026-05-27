@@ -3,42 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STONE KIM | 스톤킴 인테리어·건설 자재 수량 계산기</title>
-<meta name="description" content="스톤킴 인테리어·건설 자재 수량 계산기. 시공 전 필요한 자재 수량과 금액을 미리 확인하세요.">
+<title>STONE KIM | 스톤킴 인테리어 건축자재 수량 계산기</title>
+<meta name="description" content="스톤킴 인테리어 건축자재 수량 계산기. 시공 전 필요한 자재 수량과 금액을 미리 확인하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;min-height:100vh;}
-.wrap{max-width:520px;margin:0 auto;padding:0 0 0;}
-
-/* 헤더 로고 */
-.site-header{background:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.header-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
-.header-logo img{height:32px;object-fit:contain;}
-.header-logo-text{font-size:16px;font-weight:800;color:#111;letter-spacing:-.02em;}
-.header-logo-text span{color:#e55a1c;}
+.wrap{max-width:520px;margin:0 auto;}
+.site-header{background:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.header-left{display:flex;flex-direction:column;gap:2px;}
+.logo-main{font-size:15px;font-weight:800;color:#111;letter-spacing:-.02em;text-decoration:none;}
+.logo-main span{color:#e55a1c;}
+.logo-sub{font-size:10px;color:#999;font-weight:500;letter-spacing:-.01em;}
 .header-nav a{font-size:12px;font-weight:600;color:#888;text-decoration:none;padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;}
 .header-nav a:hover{color:#e55a1c;border-color:#e55a1c;}
-
-.content{padding:0 16px 60px;}
-
-/* 유튜브 - 자동재생 */
-.yt-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:0;background:#000;}
+.yt-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;}
 .yt-wrap iframe{width:100%;height:100%;border:none;display:block;}
-.yt-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:16px 20px;}
-.yt-overlay-text{font-size:13px;color:rgba(255,255,255,.9);font-weight:500;}
+.yt-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:16px 20px;pointer-events:none;}
+.yt-overlay-text{font-size:13px;color:rgba(255,255,255,.95);font-weight:600;}
 .yt-overlay-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
-
-/* 배너 */
-.banner{background:linear-gradient(135deg,#e55a1c,#c44010);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;margin-bottom:0;}
+.banner{background:linear-gradient(135deg,#e55a1c,#c44010);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;}
 .banner:hover{opacity:.93;}
 .bt{font-size:14px;font-weight:700;color:#fff;} .bs{font-size:11px;color:rgba(255,255,255,.8);margin-top:3px;}
 .bcta{padding:9px 18px;background:#fff;border:none;border-radius:8px;color:#e55a1c;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-
-.content-pad{padding-top:20px;}
-
-/* 카드 */
+.content{padding:16px 16px 60px;}
 .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.07);}
 .card.locked{opacity:.38;pointer-events:none;background:#f8f8f8;}
 .ch{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
@@ -58,8 +48,8 @@ body{background:#eee;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Goth
 .yn-d{font-size:11px;color:#aaa;margin-top:4px;line-height:1.4;}
 .f{margin-bottom:14px;}
 .lb{font-size:12px;font-weight:600;color:#555;margin-bottom:6px;}
-input[type=number],input[type=text]{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:14px;outline:none;transition:all .15s;}
-input[type=number]:focus,input[type=text]:focus{border-color:#e55a1c;background:#fff;}
+input[type=number],input[type=text]{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:14px;outline:none;}
+input:focus{border-color:#e55a1c;background:#fff;}
 input::placeholder{color:#bbb;}
 select{width:100%;padding:12px 14px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:10px;color:#111;font-size:13px;outline:none;cursor:pointer;}
 select:focus{border-color:#e55a1c;}
@@ -67,13 +57,13 @@ select:focus{border-color:#e55a1c;}
 .iu{position:relative;} .iu input{padding-right:56px;}
 .ub{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#bbb;pointer-events:none;}
 .mt{display:flex;gap:6px;margin-bottom:12px;}
-.mt-t{flex:1;padding:9px;border:1.5px solid #e0e0e0;border-radius:9px;background:#f8f8f8;font-size:12px;font-weight:600;color:#888;cursor:pointer;text-align:center;transition:all .15s;}
+.mt-t{flex:1;padding:9px;border:1.5px solid #e0e0e0;border-radius:9px;background:#f8f8f8;font-size:12px;font-weight:600;color:#888;cursor:pointer;text-align:center;}
 .mt-t.on{border-color:#e55a1c;background:#fff3ee;color:#e55a1c;}
 .input-tabs{display:flex;gap:0;margin-bottom:16px;border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden;}
-.itab{flex:1;padding:11px 6px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;transition:all .15s;}
+.itab{flex:1;padding:11px 6px;background:#f8f8f8;border:none;font-size:12px;font-weight:600;color:#888;cursor:pointer;}
 .itab:not(:last-child){border-right:1.5px solid #e0e0e0;}
 .itab.on{background:#fff3ee;color:#e55a1c;}
-.dzone{border:2px dashed #ddd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s;}
+.dzone{border:2px dashed #ddd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;background:#fafafa;}
 .dzone:hover,.dzone.over{border-color:#e55a1c;background:#fff8f5;}
 .dz-ic{font-size:32px;margin-bottom:10px;}
 .dz-main{font-size:14px;color:#888;font-weight:500;} .dz-main span{color:#e55a1c;font-weight:700;}
@@ -84,14 +74,14 @@ select:focus{border-color:#e55a1c;}
 .map-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px;margin-top:12px;display:none;}
 .map-box.show{display:block;}
 .map-title{font-size:13px;font-weight:700;color:#16a34a;margin-bottom:4px;}
-.map-sub{font-size:11px;color:#4ade80;margin-bottom:14px;}
-.map-preview{background:#fff;border-radius:8px;padding:10px;margin-bottom:14px;overflow-x:auto;}
+.map-sub{font-size:11px;color:#22c55e;margin-bottom:12px;line-height:1.5;}
+.map-preview{background:#fff;border-radius:8px;padding:10px;margin-bottom:14px;overflow-x:auto;max-height:140px;overflow-y:auto;}
 .map-preview table{width:100%;border-collapse:collapse;font-size:11px;}
-.map-preview th{background:#f0fdf4;color:#16a34a;font-weight:700;padding:5px 8px;text-align:left;border-bottom:1px solid #bbf7d0;}
-.map-preview td{padding:4px 8px;color:#555;border-bottom:1px solid #f0f0f0;}
-.map-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.map-label{font-size:11px;font-weight:600;color:#555;margin-bottom:4px;}
-.map-confirm{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+.map-preview th{background:#f0fdf4;color:#16a34a;font-weight:700;padding:5px 8px;text-align:left;border-bottom:1px solid #bbf7d0;white-space:nowrap;}
+.map-preview td{padding:4px 8px;color:#555;border-bottom:1px solid #f0f0f0;white-space:nowrap;}
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.map-lbl{font-size:11px;font-weight:600;color:#555;margin-bottom:4px;}
+.map-confirm{width:100%;padding:12px;background:#22c55e;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
 .map-confirm:hover{background:#16a34a;}
 .paste-guide{background:#fffbe6;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;color:#78350f;line-height:1.7;}
 .paste-guide b{color:#92400e;}
@@ -160,78 +150,66 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .dk{color:#aaa;} .dv{color:#666;} .dv.or{color:#e55a1c;font-weight:600;}
 .restart{width:100%;padding:12px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;margin-top:12px;font-weight:600;}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-
 /* 푸터 */
-.footer{background:#111;color:#fff;padding:32px 20px 40px;margin-top:0;}
-.footer-logo{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:4px;}
-.footer-logo span{color:#e55a1c;}
-.footer-tagline{font-size:12px;color:#888;margin-bottom:20px;}
-.footer-products{margin-bottom:20px;}
+.footer{background:#111;color:#fff;padding:32px 20px 40px;}
+.footer-logo-wrap{margin-bottom:6px;}
+.footer-logo-img{height:38px;object-fit:contain;filter:brightness(0) invert(1);}
+.footer-logo-fallback{font-family:'Dancing Script',cursive;font-size:32px;font-weight:700;color:#fff;letter-spacing:.02em;}
+.footer-logo-fallback span{color:#e55a1c;}
+.footer-tagline{font-size:12px;color:#888;margin-bottom:4px;}
+.footer-tagline2{font-size:12px;color:#666;margin-bottom:20px;font-style:italic;}
 .footer-products-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
-.product-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.product-tag{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;cursor:pointer;text-decoration:none;transition:all .15s;}
+.product-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
+.product-tag{font-size:11px;padding:5px 11px;border:1px solid #333;border-radius:20px;color:#ccc;cursor:pointer;text-decoration:none;}
 .product-tag:hover{border-color:#e55a1c;color:#e55a1c;}
 .footer-info{border-top:1px solid #222;padding-top:18px;margin-top:4px;}
-.footer-info-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
-.footer-info-row svg{flex-shrink:0;margin-top:1px;}
-.footer-cta{display:flex;gap:8px;margin-top:20px;}
-.footer-cta-btn{flex:1;padding:13px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;}
-.footer-cta-btn.primary{background:#e55a1c;color:#fff;}
-.footer-cta-btn.primary:hover{background:#cc4f18;}
-.footer-cta-btn.secondary{background:#222;color:#aaa;border:1px solid #333;}
-.footer-cta-btn.secondary:hover{background:#2a2a2a;color:#fff;}
+.fi-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12px;color:#888;}
+.footer-cta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px;}
+.fcta{padding:12px 8px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;}
+.fcta.kakao{background:#FEE500;color:#111;}
+.fcta.kakao:hover{background:#fdd800;}
+.fcta.sample{background:#222;color:#aaa;border:1px solid #333;}
+.fcta.sample:hover{background:#2a2a2a;color:#fff;}
+.fcta.insta{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
+.fcta.insta:hover{opacity:.9;}
 .footer-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
 </style>
 </head>
 <body>
 <div class="wrap" id="root">
-
-  <!-- 헤더 -->
   <header class="site-header">
-    <a class="header-logo" href="https://stonekim.kr" target="_blank">
-      <img src="https://ecimg.cafe24img.com/pg1984b31415074059/stonekim/web/img/logo.svg"
-        onerror="this.style.display='none';document.getElementById('logo-text').style.display='block'"
-        alt="스톤킴 로고" height="32">
-      <span class="header-logo-text" id="logo-text" style="display:none;">STONE<span>KIM</span></span>
-    </a>
+    <div class="header-left">
+      <a class="logo-main" href="https://stonekim.kr" target="_blank">STONE<span>KIM</span></a>
+      <span class="logo-sub">스톤킴 인테리어 건축자재 수량 계산기</span>
+    </div>
     <nav class="header-nav">
       <a href="https://stonekim.kr/shopinfo/samplebook.html" target="_blank">샘플 신청</a>
     </nav>
   </header>
 
-  <!-- 유튜브 자동재생 (음소거) -->
   <div class="yt-wrap">
-    <iframe
-      src="https://www.youtube.com/embed/9B1MOtBjBuY?autoplay=1&mute=1&loop=1&playlist=9B1MOtBjBuY&rel=0&modestbranding=1&playsinline=1"
-      allowfullscreen
-      allow="autoplay; encrypted-media; picture-in-picture"
-      title="스톤킴 소프트스톤 소개 영상">
-    </iframe>
+    <iframe src="https://www.youtube.com/embed/9B1MOtBjBuY?autoplay=1&mute=1&loop=1&playlist=9B1MOtBjBuY&rel=0&modestbranding=1&playsinline=1"
+      allowfullscreen allow="autoplay;encrypted-media;picture-in-picture" title="스톤킴 소개영상"></iframe>
     <div class="yt-overlay">
       <div class="yt-overlay-text">🔥 휘어지는 타일, 스톤킴 소프트스톤</div>
       <div class="yt-overlay-sub">소리를 켜려면 영상을 클릭하세요</div>
     </div>
   </div>
 
-  <!-- 견적 배너 -->
-  <a class="banner" href="https://stonekim.kr" target="_blank">
+  <a class="banner" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">
     <div><div class="bt">🪨 스톤킴 제품 무료 견적받기</div><div class="bs">소프트스톤 · 콕스톤 · 아트브릭 · WPC패널 전 제품</div></div>
-    <div class="bcta">바로가기 →</div>
+    <div class="bcta">상담하기 →</div>
   </a>
 
   <div class="content">
-    <div class="content-pad"></div>
-
-    <!-- 1단계 -->
     <div class="card" id="s1">
-      <div class="ch"><div class="num" id="n1">1</div><div><div class="ctitle">시공할 공간은 어디이신가요?</div><div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div></div></div>
+      <div class="ch"><div class="num" id="n1">1</div><div><div class="ctitle">시공할 공간은 어디인가요?</div><div class="csub">벽면과 바닥면에 따라 계산 방식이 달라집니다</div></div></div>
       <div class="g2">
         <div class="choice" id="cw" onclick="pickSpace('wall')"><div class="ci">🧱</div><div class="cn">벽</div></div>
         <div class="choice" id="cf" onclick="pickSpace('floor')"><div class="ci">⬜</div><div class="cn">바닥</div></div>
       </div>
     </div>
 
-    <!-- 2단계 -->
     <div class="card locked" id="s2">
       <div class="ch"><div class="num locked" id="n2">2</div><div><div class="ctitle">단가표가 있으신가요?</div><div class="csub">한 번만 저장하면 이 기기에서 계속 사용 가능</div></div></div>
       <div class="g2">
@@ -241,7 +219,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="back-m" style="margin-top:14px;" onclick="goBack(1)">← 이전으로</button>
     </div>
 
-    <!-- 3단계 A -->
     <div class="card locked" id="s3a">
       <div class="ch"><div class="num locked" id="n3a">3</div><div><div class="ctitle">단가표 입력 & 수량 계산</div><div class="csub">어떤 형식이든 자동으로 인식합니다</div></div></div>
       <div class="saved" id="sv">✅ <span id="sv-nm"></span><span class="chg-link" onclick="reupload()">변경하기</span></div>
@@ -256,28 +233,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             ondragover="dov(event)" ondragleave="dol()" ondrop="ddr(event)">
             <div class="dz-ic">📂</div>
             <div class="dz-main"><span>파일 선택 또는 여기에 끌어다 놓기</span></div>
-            <div class="dz-sub">엑셀, CSV 어떤 형식이든 OK · 열 순서 달라도 자동 인식</div>
+            <div class="dz-sub">엑셀·CSV 어떤 형식이든 OK<br>모델명·사이즈·단가 열을 AI가 자동 인식</div>
             <div class="fmts"><span class="fm csv">CSV</span><span class="fm xlsx">XLSX</span><span class="fm xls">XLS</span></div>
           </div>
           <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="display:none;" onchange="hf(this)">
           <div class="map-box" id="map-box">
             <div class="map-title">✨ 파일 읽기 완료! 열을 확인해주세요</div>
-            <div class="map-sub">자동으로 감지했어요. 틀린 게 있으면 수정해주세요.</div>
+            <div class="map-sub" id="map-sub-txt">자동으로 감지했어요. 틀린 게 있으면 드롭다운에서 수정하세요.</div>
             <div class="map-preview" id="map-preview"></div>
-            <div class="map-row">
-              <div><div class="map-label">모델명 열</div><select id="col-model"></select></div>
-              <div><div class="map-label">가로(mm) 열</div><select id="col-w"></select></div>
+            <div class="map-grid">
+              <div><div class="map-lbl">모델명 열</div><select id="col-model"></select></div>
+              <div><div class="map-lbl">가로(mm) 열</div><select id="col-w"></select></div>
             </div>
-            <div class="map-row">
-              <div><div class="map-label">세로(mm) 열</div><select id="col-h"></select></div>
-              <div><div class="map-label">단가(원) 열</div><select id="col-p"></select></div>
+            <div class="map-grid">
+              <div><div class="map-lbl">세로(mm) 열</div><select id="col-h"></select></div>
+              <div><div class="map-lbl">단가(원) 열</div><select id="col-p"></select></div>
             </div>
             <button class="map-confirm" onclick="confirmMapping()">✓ 이대로 적용하기</button>
           </div>
         </div>
         <div id="method2" style="display:none;">
-          <div class="paste-guide"><b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>1. 모델명·가로·세로·단가 열 선택 (순서 달라도 OK)<br>2. <b>Ctrl+C</b> 복사 → 아래 칸에 <b>Ctrl+V</b> 붙여넣기<br>→ 헤더(제목행) 있어도 자동으로 건너뜁니다</div>
-          <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 붙여넣으세요&#10;&#10;헤더가 있어도 됩니다:&#10;모델명	가로	세로	단가&#10;A001	600	1200	55000"></textarea>
+          <div class="paste-guide"><b>📋 구글 시트 / 엑셀에서 복사하는 법</b><br>1. 모델명·가로·세로·단가 열 선택<br>2. <b>Ctrl+C</b> 복사 → 아래 칸에 <b>Ctrl+V</b> 붙여넣기<br>→ 사이즈가 한 칸(600*1200)이어도 자동 인식됩니다</div>
+          <textarea id="pt" placeholder="구글 시트에서 복사한 내용을 붙여넣으세요&#10;&#10;예시:&#10;모던그레이01	600 * 1200	50000&#10;테라조화이트02	600 * 2400	160000"></textarea>
           <div class="perr" id="perr2"></div>
           <button class="apply-btn" onclick="applyPaste()">✓ 단가표 적용하기</button>
         </div>
@@ -295,9 +272,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div class="ai-box">
           <div class="ai-ttl">✦ AI에게 바로 물어보세요</div>
           <div class="ai-exs">
-            <div class="ai-ex">예) "K035 600×1200 130헤베 몇 장이야?"</div>
-            <div class="ai-ex">예) "A013 45헤베 계산해줘"</div>
-            <div class="ai-ex">예) "A017 벽 3m×2.8m 몇 장?"</div>
+            <div class="ai-ex">예) "모던그레이01 130헤베 몇 장이야?"</div>
+            <div class="ai-ex">예) "타일3 45헤베 계산해줘"</div>
+            <div class="ai-ex">예) "트래버틴10 벽 3m×2.8m 몇 장?"</div>
           </div>
           <div class="ai-row">
             <input class="ai-in" id="aiq" placeholder="모델명과 면적을 자유롭게..." onkeydown="if(event.key==='Enter')aiAsk()">
@@ -316,7 +293,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="back-m" style="margin-top:10px;" onclick="goBack(2)">← 이전으로</button>
     </div>
 
-    <!-- 3단계 B -->
     <div class="card locked" id="s3b">
       <div class="ch"><div class="num locked" id="n3b">3</div><div><div class="ctitle">자재 정보 입력 & 수량 계산</div><div class="csub">자재 사이즈와 단가를 직접 입력하세요</div></div></div>
       <div class="f"><div class="lb">자재 가로 (mm)</div><div class="iu"><input type="number" id="bw" placeholder="600" oninput="bh2()"><span class="ub">mm</span></div></div>
@@ -329,7 +305,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="back-m" onclick="goBack(2)">← 이전으로</button>
     </div>
 
-    <!-- 결과 -->
     <div class="result" id="rc">
       <div class="rhead"><div class="rbadge">✓</div><div class="rtitle">계산 결과</div></div>
       <div class="loss-box">
@@ -346,58 +321,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
   </div>
 
-  <!-- 푸터 -->
   <footer class="footer">
-    <div class="footer-logo">STONE<span>KIM</span></div>
+    <!-- 로고: 실제 이미지 시도 후 필기체 폴백 -->
+    <div class="footer-logo-wrap">
+      <img class="footer-logo-img" id="footer-logo-img"
+        src="https://ecimg.cafe24img.com/pg1984b31415074059/stonekim/web/img/logo.svg"
+        alt="스톤킴 로고"
+        onerror="this.style.display='none';document.getElementById('footer-logo-text').style.display='block'">
+      <div class="footer-logo-fallback" id="footer-logo-text" style="display:none;">Stone<span>Kim</span></div>
+    </div>
     <div class="footer-tagline">트렌디한 인테리어 자재는 스톤킴</div>
-
-    <div class="footer-products">
-      <div class="footer-products-title">제품 라인업</div>
-      <div class="product-tags">
-        <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">소프트스톤</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">콕스톤</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">아트브릭</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">WPC 패널</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">메탈 패널</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">유리블럭</a>
-        <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">스텐 패널</a>
-        <a class="product-tag" href="https://stonekim.kr/shopinfo/catalog.html" target="_blank">전체 카탈로그 →</a>
-      </div>
+    <div class="footer-tagline2">우리는 초효율 시공을 만듭니다</div>
+    <div class="footer-products-title">제품 라인업</div>
+    <div class="product-tags">
+      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">소프트스톤</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">콕스톤</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🧱-im-stone/99/" target="_blank">아트브릭</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">WPC 패널</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">메탈 패널</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">유리블럭</a>
+      <a class="product-tag" href="https://stonekim.kr/category/🚫-im-not-stone/100/" target="_blank">스텐 패널</a>
+      <a class="product-tag" href="https://stonekim.kr/shopinfo/catalog.html" target="_blank">전체 카탈로그 →</a>
     </div>
-
     <div class="footer-info">
-      <div class="footer-info-row">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>경기도 김포시 (본사 쇼룸) · 부산 대리점 · 제주 대리점</span>
-      </div>
-      <div class="footer-info-row">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <span>stonekim.kr</span>
-      </div>
-      <div class="footer-info-row">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <span>실시간 채팅 상담 가능 (사이트 내 채팅 이용)</span>
-      </div>
+      <div class="fi-row">📍 경기도 김포시 대곶면 대곶남로 307 2층 (스톤킴 쇼룸)</div>
+      <div class="fi-row">📞 고객센터 : 1866-1338</div>
     </div>
-
     <div class="footer-cta">
-      <a class="footer-cta-btn primary" href="https://stonekim.kr" target="_blank">🛒 제품 보러가기</a>
-      <a class="footer-cta-btn secondary" href="https://stonekim.kr/shopinfo/samplebook.html" target="_blank">📦 샘플 신청</a>
+      <a class="fcta kakao" href="https://pf.kakao.com/_fBxfxfn/chat" target="_blank">💬 카카오톡 상담</a>
+      <a class="fcta sample" href="https://stonekim.kr/shopinfo/samplebook.html" target="_blank">📦 샘플 신청</a>
+      <a class="fcta insta" href="https://www.instagram.com/stonekim.official/" target="_blank">📸 인스타그램</a>
     </div>
-
     <div class="footer-copy">© 2025 STONE KIM. All rights reserved.</div>
   </footer>
-
 </div>
 
 <script>
 var sp=null,prods=[],selProd=null,cache=null;
 var wc={a:0,b:0},wl={a:[],b:[]},wm={a:{},b:{}};
-var formRowCount=0,rawRows=[],rawHeaders=[];
+var formRowCount=0,rawRows=[],rawHeaders=[],rawDataStart=1;
 
 (function(){
   try{
-    var s=localStorage.getItem('sk_v3');
+    var s=localStorage.getItem('sk_v5');
     if(!s)return;
     var d=JSON.parse(s);
     if(!d||!d.prods||!d.prods.length)return;
@@ -410,7 +376,7 @@ var formRowCount=0,rawRows=[],rawHeaders=[];
   addFormRow();
 })();
 
-function save(n){try{localStorage.setItem('sk_v3',JSON.stringify({name:n,prods:prods}));}catch(e){}}
+function save(n){try{localStorage.setItem('sk_v5',JSON.stringify({name:n,prods:prods}));}catch(e){}}
 function buildSel(){
   var s=document.getElementById('ms');
   s.innerHTML='<option value="">모델 선택...</option>'+prods.map(function(p){
@@ -426,7 +392,7 @@ function applyProds(name){
   setTimeout(function(){document.getElementById('ca').scrollIntoView({behavior:'smooth',block:'start'});},120);
 }
 function reupload(){
-  try{localStorage.removeItem('sk_v3');}catch(e){}
+  try{localStorage.removeItem('sk_v5');}catch(e){}
   prods=[];selProd=null;
   document.getElementById('sv').classList.remove('on');
   document.getElementById('up-area').style.display='block';
@@ -434,23 +400,70 @@ function reupload(){
   document.getElementById('map-box').classList.remove('show');
   document.getElementById('fi').value='';
 }
-function switchTab(t){
-  [1,2,3].forEach(function(i){
-    document.getElementById('tab'+i).classList.toggle('on',i===t);
-    document.getElementById('method'+i).style.display=i===t?'block':'none';
-  });
-}
+function switchTab(t){[1,2,3].forEach(function(i){document.getElementById('tab'+i).classList.toggle('on',i===t);document.getElementById('method'+i).style.display=i===t?'block':'none';});}
 function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
 function dol(){document.getElementById('dz').classList.remove('over');}
 function ddr(e){e.preventDefault();dol();var f=e.dataTransfer.files[0];if(f)procFile(f);}
 function hf(inp){var f=inp.files[0];if(f)procFile(f);}
+
+// ========== 스마트 파싱 핵심 함수 ==========
+
+// 사이즈 문자열 파싱: "600*1200", "600 * 1200", "600x1200", "600×1200"
+function parseSize(val){
+  val=String(val||'').trim();
+  var m=val.match(/(\d+\.?\d*)\s*[*×xX×]\s*(\d+\.?\d*)/);
+  if(m)return{w:parseFloat(m[1]),h:parseFloat(m[2])};
+  return null;
+}
+
+// 숫자 추출 (쉼표, 원, 공백 제거)
+function cleanNum(val){
+  return parseFloat(String(val||'').replace(/[,₩원\s]/g,''));
+}
+
+// 열 타입 판별
+// 반환: 'id'(번호), 'model'(모델명), 'size'(WxH), 'width'(가로), 'height'(세로), 'area'(헤베), 'price'(단가), 'unknown'
+function detectColType(header, sampleVals){
+  var h=(header||'').toLowerCase().replace(/[\s\(\)\/]/g,'');
+  var nums=sampleVals.map(cleanNum).filter(function(v){return !isNaN(v)&&v>0;});
+  var sizeCount=sampleVals.filter(function(v){return parseSize(v)!==null;}).length;
+  var textCount=sampleVals.filter(function(v){var n=cleanNum(v);return isNaN(n)&&String(v).trim().length>0;}).length;
+
+  // 헤더 기반 우선 판별
+  if(/(model|모델|품명|제품|타일|이름|name|tile|품목|코드|번호|no|num)/i.test(h)&&textCount>=1) return 'model';
+  if(/(단가|price|가격|금액|원|cost|단)/i.test(h)) return 'price';
+  if(/(사이즈|size|규격|mm)/i.test(h)&&sizeCount>=1) return 'size';
+  if(/(가로|width|폭|w$)/i.test(h)) return 'width';
+  if(/(세로|height|길이|h$)/i.test(h)) return 'height';
+  if(/(면적|헤베|hb|㎡|m²|area)/i.test(h)) return 'area';
+
+  // 값 기반 판별
+  if(sizeCount>=2) return 'size';
+  if(textCount>=2&&nums.length<2) return 'model';
+  if(nums.length>=2){
+    var avg=nums.reduce(function(a,b){return a+b;})/nums.length;
+    var allSeq=nums.every(function(v,i){return i===0||Math.abs(v-(nums[i-1]+1))<=2;});
+    if(allSeq&&avg<50) return 'id';
+    if(avg>=100&&avg<=9999&&nums.every(function(v){return v>=50&&v<=9999;})) {
+      // 구분: 가로/세로는 50~9999, 단가는 보통 >1000이고 가로세로보다 훨씬 크거나 특정 패턴
+      var hasLarge=nums.some(function(v){return v>10000;});
+      if(hasLarge) return 'price';
+      return 'width'; // 가로 or 세로 (나중에 두번째 숫자열은 세로로)
+    }
+    if(avg>1000) return 'price';
+    if(avg>0&&avg<10) return 'area';
+  }
+  return 'unknown';
+}
+
 function procFile(f){
   var n=f.name.toLowerCase();
   if(n.endsWith('.csv')){
     var r=new FileReader();
     r.onload=function(e){
       var lines=e.target.result.split(/\r?\n/).filter(function(l){return l.trim();});
-      showMapping(lines.map(function(l){return l.split(',').map(function(c){return c.trim();});}),f.name);
+      var rows=lines.map(function(l){return l.split(',').map(function(c){return c.trim().replace(/^"|"$/g,'');});});
+      analyzeAndShow(rows,f.name);
     };
     r.readAsText(f,'UTF-8');
   }else if(n.endsWith('.xlsx')||n.endsWith('.xls')){
@@ -459,93 +472,208 @@ function procFile(f){
       try{
         var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
         var ws=wb.Sheets[wb.SheetNames[0]];
-        showMapping(XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(r){return r.map(function(c){return String(c);});}),f.name);
+        var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(function(r){
+          return r.map(function(c){return c===null||c===undefined?'':String(c);});
+        });
+        analyzeAndShow(rows,f.name);
       }catch(err){alert('파일 읽기 실패: '+err.message);}
     };
     r.readAsArrayBuffer(f);
   }else{alert('CSV, XLSX, XLS 파일만 지원합니다');}
 }
-function guessCol(headers,kws){
-  for(var i=0;i<headers.length;i++){
-    var h=(headers[i]||'').toLowerCase();
-    for(var k=0;k<kws.length;k++){if(h.indexOf(kws[k])>=0)return i;}
-  }
-  return -1;
-}
-function showMapping(rows,fname){
+
+function analyzeAndShow(rows,fname){
   if(!rows||rows.length<2){alert('데이터가 없습니다.');return;}
   rawRows=rows;
-  var firstIsHeader=isNaN(parseFloat(rows[0][1]));
-  rawHeaders=firstIsHeader?rows[0]:rows[0].map(function(_,i){return '열'+(i+1);});
-  var dataRows=firstIsHeader?rows.slice(1):rows;
-  var gM=guessCol(rawHeaders,['model','모델','품명','제품','name','코드','code','품목']);
-  var gW=guessCol(rawHeaders,['가로','width','w','폭']);
-  var gH=guessCol(rawHeaders,['세로','height','h','길이']);
-  var gP=guessCol(rawHeaders,['단가','price','가격','금액','원','cost']);
-  if(gW<0||gH<0||gP<0){
-    var nc=[];
-    for(var i=0;i<rawHeaders.length;i++){
-      if(dataRows.slice(0,3).some(function(r){var v=parseFloat(r[i]);return !isNaN(v)&&v>0;}))nc.push(i);
-    }
-    if(gW<0&&nc.length>0)gW=nc[0];
-    if(gH<0&&nc.length>1)gH=nc[1];
-    if(gP<0&&nc.length>2)gP=nc[2];
+
+  // 1. 실제 데이터 행 찾기 (숫자가 있는 첫 행)
+  var dataStart=0;
+  for(var i=0;i<Math.min(rows.length,6);i++){
+    var hasNum=rows[i].some(function(c){var n=cleanNum(c);return !isNaN(n)&&n>10;});
+    if(hasNum){dataStart=i;break;}
+    dataStart=i+1;
   }
-  if(gM<0){for(var i=0;i<rawHeaders.length;i++){if(i!==gW&&i!==gH&&i!==gP){gM=i;break;}}}
+  rawDataStart=dataStart;
+
+  // 2. 헤더 행 = 데이터 시작 바로 위 행 (없으면 자동 생성)
+  if(dataStart>0){
+    rawHeaders=rows[dataStart-1].map(function(h,i){return String(h||'열'+(i+1));});
+  }else{
+    rawHeaders=rows[0].map(function(_,i){return '열'+(i+1);});
+  }
+
+  var dataRows=rows.slice(dataStart);
+  if(!dataRows.length){alert('유효한 데이터를 찾지 못했습니다.');return;}
+
+  // 3. 각 열의 샘플값 추출 및 타입 판별
+  var ncols=rawHeaders.length;
+  var colTypes=[];
+  for(var ci=0;ci<ncols;ci++){
+    var samples=dataRows.slice(0,5).map(function(r){return r[ci]||'';});
+    colTypes.push(detectColType(rawHeaders[ci],samples));
+  }
+
+  // 4. 역할 배정
+  var gM=-1,gW=-1,gH=-1,gP=-1,gSize=-1;
+  // 우선순위: 명확한 타입부터
+  colTypes.forEach(function(t,i){
+    if(t==='model'&&gM<0)gM=i;
+    if(t==='size'&&gSize<0)gSize=i;
+    if(t==='price'&&gP<0)gP=i;
+    if(t==='width'&&gW<0)gW=i;
+    if(t==='height'&&gH<0)gH=i;
+  });
+
+  // size 열이 있으면 가로=세로=size (나중에 분리)
+  if(gSize>=0){gW=gSize;gH=gSize;}
+
+  // 아직 못찾은 것들: 숫자 열로 채우기
+  var numCols=[];
+  colTypes.forEach(function(t,i){if(['width','height','area','price','id'].indexOf(t)>=0||(!isNaN(cleanNum(dataRows[0]&&dataRows[0][i]))&&cleanNum(dataRows[0][i])>0))numCols.push(i);});
+
+  if(gP<0){
+    // 가장 큰 평균값 가진 열 = 단가
+    var best=-1,bestAvg=0;
+    numCols.forEach(function(ci){
+      if(ci===gW||ci===gH||ci===gSize)return;
+      var vals=dataRows.slice(0,5).map(function(r){return cleanNum(r[ci]);}).filter(function(v){return !isNaN(v)&&v>0;});
+      if(!vals.length)return;
+      var avg=vals.reduce(function(a,b){return a+b;})/vals.length;
+      if(avg>bestAvg){bestAvg=avg;best=ci;}
+    });
+    if(best>=0)gP=best;
+  }
+  if(gM<0){
+    // 텍스트가 가장 많은 열 = 모델명
+    var best=-1,bestTxt=0;
+    for(var ci=0;ci<ncols;ci++){
+      if(ci===gW||ci===gH||ci===gP)continue;
+      var cnt=dataRows.slice(0,5).filter(function(r){var n=cleanNum(r[ci]);return isNaN(n)&&String(r[ci]).trim().length>0;}).length;
+      if(cnt>bestTxt){bestTxt=cnt;best=ci;}
+    }
+    if(best>=0)gM=best;
+  }
+  if(gW<0||gH<0){
+    var remaining=numCols.filter(function(ci){return ci!==gP&&ci!==gM;});
+    // 중간 크기 열들(50~9999) = 가로세로
+    var sizeRange=remaining.filter(function(ci){
+      var vals=dataRows.slice(0,5).map(function(r){return cleanNum(r[ci]);}).filter(function(v){return !isNaN(v);});
+      return vals.length>0&&vals.every(function(v){return v>=50&&v<=9999;});
+    });
+    if(gW<0&&sizeRange.length>0)gW=sizeRange[0];
+    if(gH<0&&sizeRange.length>1)gH=sizeRange[1];
+  }
+
+  // 5. 미리보기
   var prev='<table><tr>';
   rawHeaders.forEach(function(h){prev+='<th>'+h+'</th>';});prev+='</tr>';
   dataRows.slice(0,3).forEach(function(r){prev+='<tr>';rawHeaders.forEach(function(_,i){prev+='<td>'+(r[i]||'')+'</td>';});prev+='</tr>';});
   prev+='</table>';
   document.getElementById('map-preview').innerHTML=prev;
-  var opts=rawHeaders.map(function(h,i){return '<option value="'+i+'">'+h+'</option>';}).join('');
+
+  // 6. 드롭다운
+  var opts='<option value="-1">— 해당 없음 —</option>'+rawHeaders.map(function(h,i){return '<option value="'+i+'">'+h+'</option>';}).join('');
   ['col-model','col-w','col-h','col-p'].forEach(function(id){document.getElementById(id).innerHTML=opts;});
-  document.getElementById('col-model').value=gM>=0?gM:0;
-  document.getElementById('col-w').value=gW>=0?gW:1;
-  document.getElementById('col-h').value=gH>=0?gH:2;
-  document.getElementById('col-p').value=gP>=0?gP:3;
+  document.getElementById('col-model').value=gM>=0?gM:-1;
+  document.getElementById('col-w').value=gW>=0?gW:-1;
+  document.getElementById('col-h').value=gH>=0?gH:-1;
+  document.getElementById('col-p').value=gP>=0?gP:-1;
+
   document.getElementById('map-box').classList.add('show');
   document.getElementById('map-box').dataset.fname=fname;
+
+  // 안내 메시지
+  var sizeMode=(gW>=0&&gW===gH);
+  document.getElementById('map-sub-txt').textContent=sizeMode
+    ?'사이즈 열(600*1200 형식)을 감지했어요. 가로·세로를 자동으로 분리합니다. 틀린 게 있으면 수정해주세요.'
+    :'자동으로 감지했어요. 틀린 게 있으면 드롭다운에서 수정하세요.';
 }
+
 function confirmMapping(){
   var cm=parseInt(document.getElementById('col-model').value);
   var cw=parseInt(document.getElementById('col-w').value);
   var ch=parseInt(document.getElementById('col-h').value);
   var cp=parseInt(document.getElementById('col-p').value);
-  var fih=isNaN(parseFloat(rawRows[0][1]));
-  var p2=(fih?rawRows.slice(1):rawRows).map(function(r){
-    return{model:String(r[cm]||'').trim(),w:parseFloat(r[cw]),h:parseFloat(r[ch]),p:parseFloat(r[cp])};
-  }).filter(function(p){return p.model&&!isNaN(p.w)&&!isNaN(p.h)&&!isNaN(p.p)&&p.w>0&&p.h>0&&p.p>0;});
-  if(!p2.length){alert('유효한 데이터가 없습니다. 열 선택을 확인해주세요.');return;}
+  var dataRows=rawRows.slice(rawDataStart);
+  var sizeMode=(cw>=0&&cw===ch);
+  var p2=[];
+  dataRows.forEach(function(r){
+    var model=cm>=0?String(r[cm]||'').trim():'';
+    if(!model)return;
+    var pVal=cleanNum(r[cp]);
+    var w,h;
+    if(sizeMode){
+      var sz=parseSize(r[cw]);
+      if(sz){w=sz.w;h=sz.h;}
+      else{
+        // 사이즈 열인데 파싱 실패 → 두 숫자 추출 시도
+        var nums=String(r[cw]||'').match(/\d+/g);
+        if(nums&&nums.length>=2){w=parseFloat(nums[0]);h=parseFloat(nums[1]);}
+        else return;
+      }
+    }else{
+      w=cleanNum(r[cw]);
+      h=cleanNum(r[ch]);
+    }
+    if(model&&!isNaN(w)&&!isNaN(h)&&!isNaN(pVal)&&w>0&&h>0&&pVal>0)
+      p2.push({model:model,w:w,h:h,p:pVal});
+  });
+  if(!p2.length){alert('유효한 데이터가 없습니다.\n열 선택을 다시 확인해주세요.');return;}
   prods=p2;applyProds(document.getElementById('map-box').dataset.fname||'파일');
 }
-function parseLine(line){
+
+// 구글시트 붙여넣기 (완전 자동)
+function smartParseLine(line){
   line=line.trim();if(!line)return null;
-  var parts=line.indexOf('\t')>=0?line.split('\t'):line.indexOf(',')>=0?line.split(','):line.split(/\s{2,}/);
-  parts=parts.map(function(p){return p.trim().replace(/[₩,원\s]/g,'');});
-  if(parts.length<4)return null;
-  var m=parts[0],w=parseFloat(parts[1]),h=parseFloat(parts[2]),p=parseFloat(parts[3]);
-  if(!m||isNaN(w)||isNaN(h)||isNaN(p))return null;
-  return{model:m,w:w,h:h,p:p};
+  var parts=line.indexOf('\t')>=0?line.split('\t'):line.split(',');
+  parts=parts.map(function(p){return p.trim().replace(/^"|"$/g,'');});
+  if(parts.length<2)return null;
+
+  var model='',w=0,h=0,p=0;
+  var nums=[],texts=[],sizes=[];
+
+  parts.forEach(function(v){
+    var sz=parseSize(v);
+    if(sz){sizes.push(sz);return;}
+    var n=cleanNum(v);
+    if(!isNaN(n)&&n>0)nums.push(n);
+    else if(v.length>0)texts.push(v);
+  });
+
+  if(texts.length>0)model=texts[0];
+  if(sizes.length>0){w=sizes[0].w;h=sizes[0].h;}
+  else if(nums.length>=2){
+    // 가로세로 = 50~9999 범위, 단가 = 가장 큰 값
+    var dimNums=nums.filter(function(v){return v>=50&&v<=9999;});
+    var priceNums=nums.filter(function(v){return v>9999;});
+    if(dimNums.length>=2){w=dimNums[0];h=dimNums[1];}
+    if(priceNums.length>0)p=Math.max.apply(null,priceNums);
+    else if(nums.length>2)p=Math.max.apply(null,nums);
+    else if(nums.length===1)p=nums[0];
+  }else if(nums.length===1){p=nums[0];}
+
+  if(!p&&nums.length>0)p=nums[nums.length-1];
+
+  if(!model||w<=0||h<=0||p<=0)return null;
+  return{model:model,w:w,h:h,p:p};
 }
+
 function applyPaste(){
   var txt=(document.getElementById('pt').value||'').trim();
   var err=document.getElementById('perr2');err.classList.remove('on');
   if(!txt){err.textContent='내용을 붙여넣어 주세요.';err.classList.add('on');return;}
   var lines=txt.split(/\r?\n/).filter(function(l){return l.trim();});
-  var st=isNaN(parseFloat((lines[0]||'').split(/[\t,]/)[1]))?1:0;
-  var p2=[];for(var i=st;i<lines.length;i++){var r=parseLine(lines[i]);if(r)p2.push(r);}
-  if(!p2.length){err.textContent='인식된 행이 없습니다. 4개 열(모델명·가로·세로·단가)이 선택됐는지 확인해주세요.';err.classList.add('on');return;}
+  var p2=[];
+  lines.forEach(function(l){var r=smartParseLine(l);if(r)p2.push(r);});
+  if(!p2.length){err.textContent='인식된 행이 없습니다. 모델명과 사이즈·단가가 포함된 행인지 확인해주세요.';err.classList.add('on');return;}
   prods=p2;applyProds('시트 붙여넣기 ('+p2.length+'개)');
 }
+
 function addFormRow(){
   formRowCount++;var id=formRowCount;
   var tbody=document.getElementById('form-rows');
   var tr=document.createElement('tr');tr.id='fr_'+id;
-  tr.innerHTML='<td><input type="text" id="fm_'+id+'" placeholder="A001"></td>'
-    +'<td><input type="number" id="fw_'+id+'" placeholder="600"></td>'
-    +'<td><input type="number" id="fh_'+id+'" placeholder="1200"></td>'
-    +'<td><input type="number" id="fp_'+id+'" placeholder="55000"></td>'
-    +'<td>'+(formRowCount>1?'<button class="row-del" onclick="delFormRow('+id+')">✕</button>':'')+'</td>';
+  tr.innerHTML='<td><input type="text" id="fm_'+id+'" placeholder="A001"></td><td><input type="number" id="fw_'+id+'" placeholder="600"></td><td><input type="number" id="fh_'+id+'" placeholder="1200"></td><td><input type="number" id="fp_'+id+'" placeholder="55000"></td><td>'+(formRowCount>1?'<button class="row-del" onclick="delFormRow('+id+')">✕</button>':'')+'</td>';
   tbody.appendChild(tr);
 }
 function delFormRow(id){var el=document.getElementById('fr_'+id);if(el)el.remove();}
@@ -575,17 +703,8 @@ function pickList(v){
   else{unlock('s3b','n3b');scrollTo('s3b');if(!wl.b.length)addW('b');}
 }
 function goBack(step){
-  if(step===1){
-    ['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
-    document.getElementById('rc').classList.remove('on');
-    document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');
-    var n=document.getElementById('n1');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='1';scrollTo('s1');
-  }else{
-    ['s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});
-    document.getElementById('rc').classList.remove('on');
-    document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');
-    var n=document.getElementById('n2');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='2';scrollTo('s2');
-  }
+  if(step===1){['s2','s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});document.getElementById('rc').classList.remove('on');document.getElementById('cw').classList.remove('on');document.getElementById('cf').classList.remove('on');var n=document.getElementById('n1');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='1';scrollTo('s1');}
+  else{['s3a','s3b'].forEach(function(id){document.getElementById(id).classList.add('locked');});document.getElementById('rc').classList.remove('on');document.getElementById('yy').classList.remove('yes-on');document.getElementById('yn').classList.remove('no-on');var n=document.getElementById('n2');n.className='num';n.style.background='#e55a1c';n.style.color='#fff';n.textContent='2';scrollTo('s2');}
 }
 async function aiAsk(){
   var q=(document.getElementById('aiq').value||'').trim();if(!q)return;
