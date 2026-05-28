@@ -603,14 +603,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
     </div>
 
-    <div class="modal-section">
-      <div class="modal-section-title">🤖 AI 기능 설정</div>
-      <div class="modal-field">
-        <div class="modal-label">Anthropic API 키</div>
-        <input type="password" id="s-apikey" placeholder="sk-ant-...">
-        <div class="api-note">API 키는 이 기기에만 저장됩니다. <a href="https://console.anthropic.com" target="_blank">발급받기 →</a></div>
-      </div>
-    </div>
+
 
     <button class="modal-save" onclick="saveSettings()">✓ 저장하기</button>
     <button class="modal-close" onclick="closeSettings()">닫기</button>
@@ -1132,7 +1125,7 @@ async function aiAsk(){
   document.getElementById('aia').classList.remove('on');
   var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
   try{
-    var apiKey=settings.apikey||'';
+    var apiKey=settings.apikey||'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';
     if(!apiKey){document.getElementById('aia').textContent='⚙️ 설정에서 API 키를 먼저 입력해주세요.';document.getElementById('aia').classList.add('on');document.getElementById('ait').classList.remove('on');btn.disabled=false;return;}
     var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
