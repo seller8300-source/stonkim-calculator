@@ -1123,7 +1123,7 @@ async function aiAsk(){
   document.getElementById('aia').classList.remove('on');
   var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
   try{
-    var apiKey=settings.apikey||'YOUR_API_KEY_HERE';
+    var apiKey=settings.apikey||'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';
     if(!apiKey){document.getElementById('aia').textContent='⚙️ 설정에서 API 키를 먼저 입력해주세요.';document.getElementById('aia').classList.add('on');document.getElementById('ait').classList.remove('on');btn.disabled=false;return;}
     var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
