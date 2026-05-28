@@ -458,22 +458,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
 
       <div id="ca" style="display:none;">
-        <div class="ai-box">
-          <div class="ai-ttl">✦ AI에게 바로 물어보세요</div>
-          <div class="ai-exs">
-            <div class="ai-ex">예) "모던그레이01 130헤베 몇 장이야?"</div>
-            <div class="ai-ex">예) "타일3 45헤베 계산해줘"</div>
-            <div class="ai-ex">예) "트래버틴10 벽 3m×2.8m 몇 장?"</div>
-          </div>
-          <div class="ai-row">
-            <input class="ai-in" id="aiq" placeholder="모델명과 면적을 자유롭게..." onkeydown="if(event.key==='Enter')aiAsk()">
-            <button class="ai-go" id="aig" onclick="aiAsk()">계산</button>
-          </div>
-          <div class="typing" id="ait"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-          <div class="ai-ans" id="aia"></div>
-        </div>
-        <div class="divider"></div>
-        <div class="or">또는 직접 선택해서 계산</div>
         <div class="f">
           <div class="lb">모델 선택</div>
           <select id="ms" onchange="onMs()"><option value="">모델 선택...</option></select>
@@ -1115,31 +1099,6 @@ function goBack(step){
   }
 }
 
-// ===== AI 질문 =====
-async function aiAsk(){
-  var q=(document.getElementById('aiq').value||'').trim();if(!q)return;
-  var btn=document.getElementById('aig');btn.disabled=true;
-  document.getElementById('ait').classList.add('on');
-  document.getElementById('aia').classList.remove('on');
-  var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
-  try{
-    var apiKey=settings.apikey||'YOUR_API_KEY_HERE';
-    var res=await fetch('https://stonkim-api.seller8300.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
-        system:'인테리어 자재 수량 계산 전문가.\n단가표:\n'+db+'\n\n규칙: 헤베=m², 평=3.3058m², 수량=올림(면적÷1장면적), 로스=올림(수량×1.1)\n결과: 수량·로스포함수량·금액만 간결하게. 한국어.',
-        messages:[{role:'user',content:q}]})});
-    var d=await res.json();
-    document.getElementById('ait').classList.remove('on');
-    var a=document.getElementById('aia');
-    a.textContent=(d.content&&d.content[0]&&d.content[0].text)||'다시 시도해주세요.';
-    a.classList.add('on');
-  }catch(e){
-    document.getElementById('ait').classList.remove('on');
-    document.getElementById('aia').textContent='잠시 후 다시 시도해주세요.';
-    document.getElementById('aia').classList.add('on');
-  }
-  btn.disabled=false;
-}
 
 // ===== 벽면 추가 =====
 function addW(m){
@@ -1340,8 +1299,6 @@ function doRestart(){
   document.getElementById('bwalls').innerHTML='';
   ['bw','bh','bp'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('bhint').textContent='';
-  document.getElementById('aiq').value='';
-  document.getElementById('aia').classList.remove('on');
   document.getElementById('cw').classList.remove('on');
   document.getElementById('cf').classList.remove('on');
   document.getElementById('yy').classList.remove('yes-on');
