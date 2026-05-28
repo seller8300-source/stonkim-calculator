@@ -240,6 +240,30 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .print-area{display:block!important;}
 }
 .print-area{display:none;}
+/* 설정 버튼 */
+.settings-btn{position:fixed;bottom:20px;right:20px;width:48px;height:48px;background:#111;border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.3);z-index:200;display:flex;align-items:center;justify-content:center;}
+.settings-btn:hover{background:#333;}
+/* 모달 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;overflow-y:auto;}
+.modal-bg.show{display:flex;align-items:flex-start;justify-content:center;padding:20px;}
+.modal{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:480px;margin:auto;}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:#999;margin-bottom:20px;}
+.modal-section{margin-bottom:18px;}
+.modal-section-title{font-size:12px;font-weight:700;color:#555;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #f0f0f0;}
+.modal-field{margin-bottom:10px;}
+.modal-label{font-size:12px;font-weight:500;color:#666;margin-bottom:5px;}
+.modal-field input,.modal-field textarea{width:100%;padding:10px 12px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:8px;color:#111;font-size:13px;outline:none;}
+.modal-field input:focus,.modal-field textarea:focus{border-color:#e55a1c;background:#fff;}
+.modal-field textarea{height:80px;resize:vertical;font-family:inherit;}
+.stamp-upload{border:2px dashed #ddd;border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:#fafafa;margin-bottom:8px;}
+.stamp-upload:hover{border-color:#e55a1c;background:#fff8f5;}
+.stamp-preview{max-height:80px;max-width:160px;object-fit:contain;display:block;margin:8px auto 0;}
+.modal-save{width:100%;padding:13px;background:#e55a1c;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+.modal-save:hover{background:#cc4f18;}
+.modal-close{width:100%;padding:11px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;color:#888;font-size:13px;cursor:pointer;margin-top:8px;font-weight:600;}
+.api-note{font-size:11px;color:#aaa;margin-top:4px;line-height:1.5;}
+.api-note a{color:#3b82f6;}
 /* 파싱 검토 테이블 */
 .review-box{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
 .review-box.show{display:block;}
@@ -538,11 +562,129 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </footer>
 
 </div>
+<!-- 설정 버튼 -->
+<button class="settings-btn" onclick="openSettings()" title="설정">⚙️</button>
+
+<!-- 설정 모달 -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">⚙️ 설정</div>
+    <div class="modal-sub">한 번만 입력하면 저장되어 견적서에 자동 반영됩니다</div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">📋 업체 정보 (견적서에 표시)</div>
+      <div class="modal-field"><div class="modal-label">업체명</div><input type="text" id="s-company" placeholder="예) 스톤킴 인테리어"></div>
+      <div class="modal-field"><div class="modal-label">담당자</div><input type="text" id="s-person" placeholder="예) 홍길동"></div>
+      <div class="modal-field"><div class="modal-label">연락처</div><input type="text" id="s-phone" placeholder="예) 010-1234-5678"></div>
+      <div class="modal-field"><div class="modal-label">주소</div><input type="text" id="s-addr" placeholder="예) 경기도 김포시 대곶면 대곶남로 307"></div>
+      <div class="modal-field"><div class="modal-label">이메일 / 홈페이지</div><input type="text" id="s-web" placeholder="예) stonekim.kr"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">🔏 도장 이미지</div>
+      <div class="stamp-upload" onclick="document.getElementById('stamp-fi').click()">
+        <div style="font-size:24px;margin-bottom:6px;">🔏</div>
+        <div style="font-size:13px;color:#888;">도장 이미지 클릭하여 업로드</div>
+        <div style="font-size:11px;color:#bbb;margin-top:4px;">PNG 투명 배경 권장</div>
+      </div>
+      <input type="file" id="stamp-fi" accept="image/*" style="display:none;" onchange="loadStamp(this)">
+      <img id="stamp-preview" class="stamp-preview" style="display:none;">
+      <div id="stamp-remove" style="display:none;text-align:center;margin-top:4px;">
+        <span style="font-size:12px;color:#ef4444;cursor:pointer;text-decoration:underline;" onclick="removeStamp()">도장 삭제</span>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">📝 견적서 하단 문구</div>
+      <div class="modal-field">
+        <textarea id="s-terms" placeholder="예) • 본 견적서는 발행일로부터 30일간 유효합니다.
+• 자재비는 부가세 별도입니다.
+• 시공 전 현장 실측을 권장합니다.
+• 문의: 1866-1338"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">🤖 AI 기능 설정</div>
+      <div class="modal-field">
+        <div class="modal-label">Anthropic API 키</div>
+        <input type="password" id="s-apikey" placeholder="sk-ant-...">
+        <div class="api-note">API 키는 이 기기에만 저장됩니다. <a href="https://console.anthropic.com" target="_blank">발급받기 →</a></div>
+      </div>
+    </div>
+
+    <button class="modal-save" onclick="saveSettings()">✓ 저장하기</button>
+    <button class="modal-close" onclick="closeSettings()">닫기</button>
+  </div>
+</div>
+
 <!-- 인쇄용 견적서 -->
 <div class="print-area" id="print-area"></div>
 
 <script>
 // ===== 상태 =====
+var settings={};
+
+function loadSettings(){
+  try{
+    var s=localStorage.getItem('sk_settings');
+    if(s)settings=JSON.parse(s)||{};
+  }catch(e){settings={};}
+}
+function openSettings(){
+  loadSettings();
+  document.getElementById('s-company').value=settings.company||'';
+  document.getElementById('s-person').value=settings.person||'';
+  document.getElementById('s-phone').value=settings.phone||'';
+  document.getElementById('s-addr').value=settings.addr||'';
+  document.getElementById('s-web').value=settings.web||'';
+  document.getElementById('s-apikey').value=settings.apikey||'';
+  document.getElementById('s-terms').value=settings.terms||'• 본 견적서는 발행일로부터 30일간 유효합니다.\n• 자재비는 부가세 별도입니다.\n• 시공 전 현장 실측을 권장합니다.\n• 문의: 1866-1338';
+  if(settings.stamp){
+    document.getElementById('stamp-preview').src=settings.stamp;
+    document.getElementById('stamp-preview').style.display='block';
+    document.getElementById('stamp-remove').style.display='block';
+  }else{
+    document.getElementById('stamp-preview').style.display='none';
+    document.getElementById('stamp-remove').style.display='none';
+  }
+  document.getElementById('settings-modal').classList.add('show');
+}
+function closeSettings(){
+  document.getElementById('settings-modal').classList.remove('show');
+}
+function saveSettings(){
+  settings.company=document.getElementById('s-company').value.trim();
+  settings.person=document.getElementById('s-person').value.trim();
+  settings.phone=document.getElementById('s-phone').value.trim();
+  settings.addr=document.getElementById('s-addr').value.trim();
+  settings.web=document.getElementById('s-web').value.trim();
+  settings.apikey=document.getElementById('s-apikey').value.trim();
+  settings.terms=document.getElementById('s-terms').value.trim();
+  try{localStorage.setItem('sk_settings',JSON.stringify(settings));}catch(e){}
+  closeSettings();
+  alert('저장되었습니다.');
+}
+function loadStamp(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    settings.stamp=e.target.result;
+    document.getElementById('stamp-preview').src=e.target.result;
+    document.getElementById('stamp-preview').style.display='block';
+    document.getElementById('stamp-remove').style.display='block';
+  };
+  r.readAsDataURL(f);
+}
+function removeStamp(){
+  settings.stamp='';
+  document.getElementById('stamp-preview').style.display='none';
+  document.getElementById('stamp-remove').style.display='none';
+  document.getElementById('stamp-fi').value='';
+}
+
+// 초기화 시 설정 불러오기
+loadSettings();
 var sp=null, prods=[], selProd=null, cache=null, parsedProds=null;
 var wc={a:0,b:0}, wl={a:[],b:[]}, wm={a:{},b:{}};
 var rowCnt=0;
@@ -991,7 +1133,9 @@ async function aiAsk(){
   document.getElementById('aia').classList.remove('on');
   var db=prods.map(function(p){return p.model+': '+p.w+'×'+p.h+'mm, 단가 '+p.p+'원';}).join('\n');
   try{
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+    var apiKey=settings.apikey||'';
+    if(!apiKey){document.getElementById('aia').textContent='⚙️ 설정에서 API 키를 먼저 입력해주세요.';document.getElementById('aia').classList.add('on');document.getElementById('ait').classList.remove('on');btn.disabled=false;return;}
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
         system:'인테리어 자재 수량 계산 전문가.\n단가표:\n'+db+'\n\n규칙: 헤베=m², 평=3.3058m², 수량=올림(면적÷1장면적), 로스=올림(수량×1.1)\n결과: 수량·로스포함수량·금액만 간결하게. 한국어.',
         messages:[{role:'user',content:q}]})});
@@ -1137,27 +1281,43 @@ function printQuote(){
   });
   var today=new Date();
   var dateStr=today.getFullYear()+'.'+(today.getMonth()+1)+'.'+(today.getDate());
+  loadSettings();
+  var co=settings.company||'STONE KIM';
+  var pe=settings.person||'';
+  var ph=settings.phone||'1866-1338';
+  var ad=settings.addr||'경기도 김포시 대곶면 대곶남로 307 2층';
+  var wb=settings.web||'stonekim.kr';
+  var terms=settings.terms||'• 본 견적서는 발행일로부터 30일간 유효합니다.\n• 자재비는 부가세 별도입니다.\n• 시공 전 현장 실측을 권장합니다.';
+  var stampImg=settings.stamp?'<img src="'+settings.stamp+'" style="height:70px;width:70px;object-fit:contain;margin-left:12px;vertical-align:middle;">':'';
+  var termsHtml=terms.split('\n').map(function(l){return '<div>'+l+'</div>';}).join('');
+
   var html='<html><head><meta charset="UTF-8"><style>'
     +'*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;}'
     +'body{padding:30px;color:#111;font-size:13px;}'
     +'.hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #e55a1c;}'
-    +'.logo{font-size:24px;font-weight:900;color:#111;letter-spacing:-.02em;}'
+    +'.hd-left{display:flex;align-items:center;}'
+    +'.logo{font-size:22px;font-weight:900;color:#111;}'
     +'.logo span{color:#e55a1c;}'
-    +'.hd-right{text-align:right;font-size:11px;color:#888;line-height:1.6;}'
+    +'.hd-right{text-align:right;font-size:11px;color:#888;line-height:1.8;}'
     +'.title{font-size:18px;font-weight:700;margin-bottom:16px;}'
     +'.info-table{width:100%;border-collapse:collapse;margin-bottom:20px;}'
     +'.info-table td{padding:7px 10px;border:1px solid #e0e0e0;font-size:12px;}'
-    +'.info-table td:first-child{background:#f8f8f8;font-weight:600;color:#555;width:80px;}'
+    +'.info-table td:first-child{background:#f8f8f8;font-weight:600;color:#555;width:70px;}'
     +'table{width:100%;border-collapse:collapse;margin-bottom:20px;}'
     +'th{background:#e55a1c;color:#fff;padding:9px 10px;text-align:left;font-size:12px;font-weight:600;}'
     +'td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:12px;}'
     +'tr:nth-child(even) td{background:#fafafa;}'
     +'.total-row td{font-weight:700;background:#fff8f0;color:#e55a1c;font-size:14px;}'
-    +'.footer-note{font-size:11px;color:#aaa;text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;}'
+    +'.terms-box{background:#f9f9f9;border:1px solid #e0e0e0;border-radius:6px;padding:14px;margin-top:16px;font-size:11px;color:#666;line-height:1.8;}'
+    +'.terms-title{font-size:12px;font-weight:700;color:#444;margin-bottom:8px;}'
+    +'.sign-area{display:flex;justify-content:flex-end;margin-top:20px;}'
+    +'.sign-box{text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:12px 20px;min-width:120px;}'
+    +'.sign-box-title{font-size:11px;color:#888;margin-bottom:8px;}'
+    +'.sign-company{font-size:13px;font-weight:700;}'
     +'</style></head><body>'
     +'<div class="hd">'
-    +'<div class="logo">STONE<span>KIM</span></div>'
-    +'<div class="hd-right">경기도 김포시 대곶면 대곶남로 307 2층<br>고객센터: 1866-1338<br>stonekim.kr</div>'
+    +'<div class="hd-left"><div class="logo">'+co+(co==='STONE KIM'?'':'<br><span style="font-size:11px;color:#e55a1c;font-weight:400;">STONE KIM</span>')+'</div></div>'
+    +'<div class="hd-right">'+(pe?pe+'<br>':'')+ph+'<br>'+ad+'<br>'+wb+'</div>'
     +'</div>'
     +'<div class="title">자재 수량 견적서</div>'
     +'<table class="info-table">'
@@ -1170,7 +1330,10 @@ function printQuote(){
     +rows
     +'<tr class="total-row"><td colspan="4">총 합계 (로스 포함)</td><td>'+tPL.toLocaleString()+'원</td></tr>'
     +'</table>'
-    +'<div class="footer-note">본 견적서는 참고용입니다. 실제 시공 시 현장 실측을 권장합니다. · STONE KIM</div>'
+    +'<div class="terms-box"><div class="terms-title">안내 사항</div>'+termsHtml+'</div>'
+    +'<div class="sign-area">'
+    +'<div class="sign-box"><div class="sign-box-title">공급자</div>'+stampImg+'<div class="sign-company">'+co+'</div></div>'
+    +'</div>'
     +'</body></html>';
 
   var w=window.open('','_blank','width=800,height=1000');
