@@ -240,9 +240,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .print-area{display:block!important;}
 }
 .print-area{display:none;}
-/* 설정 버튼 */
-.settings-btn{position:fixed;bottom:20px;right:20px;width:48px;height:48px;background:#111;border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.3);z-index:200;display:flex;align-items:center;justify-content:center;}
-.settings-btn:hover{background:#333;}
 /* 모달 */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;overflow-y:auto;}
 .modal-bg.show{display:flex;align-items:flex-start;justify-content:center;padding:20px;}
@@ -297,6 +294,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <span style="font-size:11px;color:#aaa;font-weight:500;">인테리어 건축자재 수량 계산기</span>
       </a>
     </div>
+    <button onclick="openSettings()" style="padding:7px 14px;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:8px;font-size:12px;font-weight:600;color:#555;cursor:pointer;white-space:nowrap;">⚙️ 설정</button>
   </header>
 
   <div class="yt">
@@ -521,7 +519,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="ri"></div>
       <!-- 견적서 출력 -->
     <div class="quote-box" id="quote-box">
-      <div class="quote-title">📄 견적서 출력</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="quote-title" style="margin-bottom:0;">📄 견적서 출력</div>
+      <span onclick="openSettings()" style="font-size:11px;color:#e55a1c;cursor:pointer;text-decoration:underline;font-weight:600;">⚙️ 업체 정보 설정</span>
+    </div>
       <div class="quote-fields">
         <div class="quote-field"><input type="text" id="q-name" placeholder="고객명"></div>
         <div class="quote-field"><input type="text" id="q-tel" placeholder="연락처"></div>
@@ -562,8 +563,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </footer>
 
 </div>
-<!-- 설정 버튼 -->
-<button class="settings-btn" onclick="openSettings()" title="설정">⚙️</button>
 
 <!-- 설정 모달 -->
 <div class="modal-bg" id="settings-modal">
