@@ -207,7 +207,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
 /* 푸터 */
-.footer{background:#111;color:#fff;padding:32px 20px 40px;}
+.footer{background:#000;color:#fff;padding:32px 20px 40px;}
 .f-logo{font-family:'Dancing Script',cursive;font-size:30px;font-weight:700;color:#fff;margin-bottom:4px;}
 .f-logo span{color:#e55a1c;}
 .f-tag{font-size:12px;color:#888;margin-bottom:3px;}
@@ -224,6 +224,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .fcta.sp{background:#222;color:#aaa;border:1px solid #333;}
 .fcta.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
 .f-copy{font-size:10px;color:#444;margin-top:20px;text-align:center;}
+/* 견적서 */
+.quote-box{background:#fff;border:1.5px solid #e0e0e0;border-radius:12px;padding:16px;margin-top:14px;}
+.quote-title{font-size:13px;font-weight:700;color:#555;margin-bottom:12px;}
+.quote-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.quote-field-full{margin-bottom:8px;}
+.quote-field input{width:100%;padding:10px 12px;background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:8px;color:#111;font-size:13px;outline:none;}
+.quote-field input:focus{border-color:#e55a1c;background:#fff;}
+.quote-field input::placeholder{color:#bbb;}
+.quote-print{width:100%;padding:12px;background:#e55a1c;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.quote-print:hover{background:#cc4f18;}
+/* 인쇄 스타일 */
+@media print{
+  .site-header,.yt,.bnr,.catch,.content,.footer{display:none!important;}
+  .print-area{display:block!important;}
+}
+.print-area{display:none;}
 /* 파싱 검토 테이블 */
 .review-box{display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;}
 .review-box.show{display:block;}
@@ -479,7 +495,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div class="loss-h" id="lh">기본 10% · 조절하거나 직접 입력하세요</div>
       </div>
       <div id="ri"></div>
-      <button class="restart" onclick="doRestart()">↺ 처음부터 다시</button>
+      <!-- 견적서 출력 -->
+    <div class="quote-box" id="quote-box">
+      <div class="quote-title">📄 견적서 출력</div>
+      <div class="quote-fields">
+        <div class="quote-field"><input type="text" id="q-name" placeholder="고객명"></div>
+        <div class="quote-field"><input type="text" id="q-tel" placeholder="연락처"></div>
+      </div>
+      <div class="quote-field quote-field-full"><input type="text" id="q-addr" placeholder="현장 주소"></div>
+      <div class="quote-field quote-field-full" style="margin-bottom:12px;"><input type="text" id="q-memo" placeholder="메모 (선택)"></div>
+      <button class="quote-print" onclick="printQuote()">🖨️ 견적서 출력 / 저장</button>
+    </div>
+    <button class="restart" onclick="doRestart()">↺ 처음부터 다시</button>
     </div>
 
   </div>
@@ -511,6 +538,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </footer>
 
 </div>
+<!-- 인쇄용 견적서 -->
+<div class="print-area" id="print-area"></div>
+
 <script>
 // ===== 상태 =====
 var sp=null, prods=[], selProd=null, cache=null, parsedProds=null;
@@ -1080,6 +1110,76 @@ function renderResult(c,lr){
     +'<div class="rsec">'+rows+'</div>';
 }
 
+// ===== 견적서 출력 =====
+function printQuote(){
+  if(!cache||!cache.details||!cache.details.length){alert('먼저 계산을 해주세요.');return;}
+  var name=document.getElementById('q-name').value||'';
+  var tel=document.getElementById('q-tel').value||'';
+  var addr=document.getElementById('q-addr').value||'';
+  var memo=document.getElementById('q-memo').value||'';
+  var lr=getLoss();
+  var mult=1+lr/100;
+  var tp=cache.details[0].tp;
+  var rows='';
+  var tQ=0,tQL=0,tP=0,tPL=0;
+  cache.details.forEach(function(d){
+    var qL=Math.ceil(d.qty*mult);
+    var price=d.qty*tp;
+    var priceL=Math.ceil(d.qty*mult)*tp;
+    tQ+=d.qty;tQL+=qL;tP+=price;tPL+=priceL;
+    rows+='<tr>'
+      +'<td>'+d.aM+'헤베 ('+(d.aM/3.3058).toFixed(1)+'평)</td>'
+      +'<td>'+(selProd?selProd.model:'-')+'</td>'
+      +'<td>'+(selProd?selProd.w+'×'+selProd.h+'mm':'-')+'</td>'
+      +'<td>'+d.qty+'장 → '+qL+'장</td>'
+      +'<td>'+priceL.toLocaleString()+'원</td>'
+      +'</tr>';
+  });
+  var today=new Date();
+  var dateStr=today.getFullYear()+'.'+(today.getMonth()+1)+'.'+(today.getDate());
+  var html='<html><head><meta charset="UTF-8"><style>'
+    +'*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;}'
+    +'body{padding:30px;color:#111;font-size:13px;}'
+    +'.hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #e55a1c;}'
+    +'.logo{font-size:24px;font-weight:900;color:#111;letter-spacing:-.02em;}'
+    +'.logo span{color:#e55a1c;}'
+    +'.hd-right{text-align:right;font-size:11px;color:#888;line-height:1.6;}'
+    +'.title{font-size:18px;font-weight:700;margin-bottom:16px;}'
+    +'.info-table{width:100%;border-collapse:collapse;margin-bottom:20px;}'
+    +'.info-table td{padding:7px 10px;border:1px solid #e0e0e0;font-size:12px;}'
+    +'.info-table td:first-child{background:#f8f8f8;font-weight:600;color:#555;width:80px;}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:20px;}'
+    +'th{background:#e55a1c;color:#fff;padding:9px 10px;text-align:left;font-size:12px;font-weight:600;}'
+    +'td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:12px;}'
+    +'tr:nth-child(even) td{background:#fafafa;}'
+    +'.total-row td{font-weight:700;background:#fff8f0;color:#e55a1c;font-size:14px;}'
+    +'.footer-note{font-size:11px;color:#aaa;text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;}'
+    +'</style></head><body>'
+    +'<div class="hd">'
+    +'<div class="logo">STONE<span>KIM</span></div>'
+    +'<div class="hd-right">경기도 김포시 대곶면 대곶남로 307 2층<br>고객센터: 1866-1338<br>stonekim.kr</div>'
+    +'</div>'
+    +'<div class="title">자재 수량 견적서</div>'
+    +'<table class="info-table">'
+    +'<tr><td>작성일</td><td>'+dateStr+'</td><td>고객명</td><td>'+(name||'-')+'</td></tr>'
+    +'<tr><td>연락처</td><td>'+(tel||'-')+'</td><td>현장주소</td><td>'+(addr||'-')+'</td></tr>'
+    +(memo?'<tr><td>메모</td><td colspan="3">'+memo+'</td></tr>':'')
+    +'</table>'
+    +'<table>'
+    +'<tr><th>면적</th><th>모델명</th><th>사이즈</th><th>수량 (로스'+lr+'% 포함)</th><th>금액</th></tr>'
+    +rows
+    +'<tr class="total-row"><td colspan="4">총 합계 (로스 포함)</td><td>'+tPL.toLocaleString()+'원</td></tr>'
+    +'</table>'
+    +'<div class="footer-note">본 견적서는 참고용입니다. 실제 시공 시 현장 실측을 권장합니다. · STONE KIM</div>'
+    +'</body></html>';
+
+  var w=window.open('','_blank','width=800,height=1000');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(function(){w.print();},500);
+}
+
 // ===== 처음부터 =====
 function doRestart(){
   sp=null;selProd=null;cache=null;parsedProds=null;
@@ -1101,6 +1201,7 @@ function doRestart(){
   document.getElementById('ln').value=10;
   document.getElementById('lh').textContent='기본 10% · 조절하거나 직접 입력하세요';
   window.scrollTo({top:0,behavior:'smooth'});
+  ['q-name','q-tel','q-addr','q-memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
 }
 </script>
 </body>
